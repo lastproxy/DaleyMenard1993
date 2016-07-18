@@ -1,11 +1,10 @@
 import numpy as np 
-from gridCls import Grid
 import matplotlib.pyplot as plt
-from corrModelLib import Uncorrelated, Foar, Soar, Gaussian
-from DM93PlotLib import (   plotCorrPowSpectra, plotImageGF2, 
-                            plotAssympVar,  plotAssympConvRate, 
-                            plotViscAssympVar, plotViscAssympConv
-                            )
+from DM93 import (  Grid, Uncorrelated, Foar, Soar, Gaussian,
+                    plotCorrPowSpectra, plotImageGF2, 
+                    plotAssympVar,  plotAssympConvRate, 
+                    plotViscAssympVar, plotViscAssympConv
+                    )
 
 # -- Grid
 # units of space = m and time = s
