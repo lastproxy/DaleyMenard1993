@@ -7,7 +7,16 @@ from DM93Lib import spVarStationary
 
 
 def plotCorrPowSpectra(grid, r2, q2, axe=None):
-    ''' Plot error correlation power spectra '''
+    ''' Plot error correlation power spectra
+    
+    :Parameters:
+        grid : `Grid`
+            Periodic 1D grid
+        r2 : np.ndarray
+            Observation error correlation power spectra 
+        q2 : np.ndarray
+            Model error correlation power spectra
+    '''
     if axe==None:
         axe = plt.subplot(111)
     axe.semilogy(grid.k, r2, label='obs. error')
@@ -25,16 +34,16 @@ def plotImageGF2(   grid, k, r2, q2, f20=0, nu=0, nIter=5,
     ''' Plot G(f2) phase space and iterations convergence 
     
     :Parameters:
-        grid : Grid
-            periodic 1D grid
+        grid : `Grid`
+            Periodic 1D grid
         k : int
-            wavenumber
-        r2 : np.array
-            observation error correlation power spectra
-        q2 : np.array
-            model error correlation power spectra
+            Wavenumber
+        r2 : np.ndarray
+            Observation error correlation power spectra
+        q2 : np.ndarray
+            Model error correlation power spectra
         nu : float
-            viscosity coefficient
+            Viscosity coefficient
     '''
     if axe==None:
         axe = plt.subplot(111)
@@ -45,12 +54,12 @@ def plotImageGF2(   grid, k, r2, q2, f20=0, nu=0, nIter=5,
     f2n = f20
     for i in xrange(nIter):
         convF2.append(f2n)
-        f2n = G(f2n, grid, r2[k], q2[k], k=k, nu=nu)
+        f2n = G(grid, f2n, r2[k], q2[k], k=k, nu=nu)
         convG.append(f2n)
 
     # -- stationary solution
     f2Plus = spVarStationary(grid, r2[k], q2[k], k=k, nu=nu)
-    GF2Plus = G(f2Plus, grid, r2[k], q2[k], k=k, nu=nu)
+    GF2Plus = G(grid, f2Plus, r2[k], q2[k], k=k, nu=nu)
     
     # -- plotting convergence iterates
     for i, (f2, g) in enumerate(zip(convF2, convG)):
@@ -70,7 +79,7 @@ def plotImageGF2(   grid, k, r2, q2, f20=0, nu=0, nIter=5,
     domF2 = np.linspace(1.1*minF2, 1.1*maxF2, 1000)
     imGF2 = list()
     for f2 in domF2:
-        imGF2.append(G(f2, grid, r2[k], q2[k], k=k, nu=nu))
+        imGF2.append(G(grid, f2, r2[k], q2[k], k=k, nu=nu))
     
 
     axe.plot(domF2, imGF2, 'k', linewidth=2, label=r'$G(f^2)$')

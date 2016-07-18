@@ -23,10 +23,8 @@ r2 = corrObs.powSpec()
 q2 = corrMod.powSpec()
 
 
-
-
-#plt.figure()
-#axe = plotCorrPowSpectra(grid, r2, q2)
+plt.figure()
+axe = plotCorrPowSpectra(grid, r2, q2)
 
 # -- convergence
 nIter = 5
