@@ -10,7 +10,8 @@ class CorrModel(object):
         self.Lp = self.Lc/self.eFold
 
     def corrFunc(self):
-        return self._func(self.grid.x, self.Lp)
+        f = np.vectorize(self._func)
+        return f(self.grid.x, self.Lp)
 
     def powSpec(self): 
         raise NotImplementedError()
@@ -56,7 +57,7 @@ class Foar(CorrModel):
         
     def powSpec(self):
         q = 2.*np.pi*self.grid.k/self.grid.L
-        sp = (1. + q**2*self.Lp**2)
+        sp = (1. + q**2*self.Lp**2)**-1
         sp /= (sp[0]+ 2.*sum(sp[1:]))
         return sp
 
