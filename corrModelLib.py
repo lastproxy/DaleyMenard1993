@@ -29,6 +29,17 @@ class Uncorrelated(CorrModel):
     def powSpec(self):
         return np.ones(self.grid.k.shape)/self.grid.nGP
 
+class Foar(CorrModel):
+    ''' First order autoregressive correlation model '''
+    def corrFunc(self):
+        x = np.abs(self.grid.x)/self.Lp
+        return np.exp(-x)
+        
+    def powSpec(self):
+        q = 2.*np.pi*self.grid.k/self.grid.L
+        sp = (1. + q**2*self.Lp**2)
+        sp /= (sp[0]+ 2.*sum(sp[1:]))
+        return sp
 
 class Soar(CorrModel):
     ''' Second order autoregressive correlation model '''
@@ -39,5 +50,16 @@ class Soar(CorrModel):
     def powSpec(self):
         q = 2.*np.pi*self.grid.k/self.grid.L
         sp = (1. + q**2*self.Lp**2)**-2
+        sp /= (sp[0]+ 2.*sum(sp[1:]))
+        return sp
+
+class Gaussian(CorrModel):
+    ''' Gaussian correlation model '''
+    def corrFunc(self):
+        return np.exp(-self.grid.x**2/(2.*self.Lp**2))
+        
+    def powSpec(self):
+        q = 2.*np.pi*self.grid.k/self.grid.L
+        sp = np.exp(-q**2*self.Lp**2/2)
         sp /= (sp[0]+ 2.*sum(sp[1:]))
         return sp

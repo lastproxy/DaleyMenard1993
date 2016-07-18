@@ -1,6 +1,7 @@
 import numpy as np 
 from gridCls import Grid
-from corrModelLib import Uncorrelated, Soar
+import matplotlib.pyplot as plt
+from corrModelLib import Uncorrelated, Foar, Soar, Gaussian
 from DM93PlotLib import (   plotCorrPowSpectra, plotImageGF2, 
                             plotAssympVar,  plotAssympConvRate, 
                             plotViscAssympVar, plotViscAssympConv
