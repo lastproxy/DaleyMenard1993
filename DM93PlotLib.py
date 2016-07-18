@@ -6,7 +6,7 @@ from DM93Lib import (   fcstSpVarPropagator, spVarStationary, varItGenerator,
                         )
 
 
-def plotCorrPowSpectra(grid, r2, q2, axe=None):
+def plotCorrPowSpectra(grid, r2, q2, axe=None, legend=True):
     ''' Plot error correlation power spectra
     
     :Parameters:
@@ -21,16 +21,17 @@ def plotCorrPowSpectra(grid, r2, q2, axe=None):
         axe = plt.subplot(111)
     axe.semilogy(grid.k, r2, label='obs. error')
     axe.semilogy(grid.k, q2, label='model error')
-    axe.legend(loc='upper right')
     axe.set_title('Error correlation power spectra')
     axe.set_xlabel('wavenumber $k$')
+
+    if legend : axe.legend(loc='upper right')
     return axe
 
     
 
 
 def plotImageGF2(   grid, k, r2, q2, f20=0, dt=1., nu=0, nIter=5, 
-                    axe=None, annotate=True, limAmpl=1.2):
+                    axe=None, annotate=True, limAmpl=1.2, legend=True):
     ''' Plot G(f2) phase space and iterations convergence 
     
     :Parameters:
@@ -107,11 +108,12 @@ def plotImageGF2(   grid, k, r2, q2, f20=0, dt=1., nu=0, nIter=5,
     
     axe.set_title(r'Convergence to stationary solution for $k=%d$'%k)
 
-    plt.legend(loc='best')
+    if legend : axe.legend(loc='best')
     return axe
 
 
-def plotAssympVar(grid, r2, q2, dt=1., nu=0., axe=None, yscale='log'):
+def plotAssympVar(  grid, r2, q2, dt=1., nu=0., axe=None, yscale='log', 
+                    legend=True):
     ''' Plot assymptotical variances (forecast and analysis) spectra
     
     :Parameters:
@@ -138,12 +140,13 @@ def plotAssympVar(grid, r2, q2, dt=1., nu=0., axe=None, yscale='log'):
     axe.set_yscale(yscale)
     axe.set_xlabel('wavenumber $k$')
     axe.set_title('Assymptotical variances')
-    axe.legend(loc='upper right')
+    if legend: axe.legend(loc='upper right')
 
     return axe
 
 
-def plotAssympConvRate(grid, r2, q2, dt=1., nu=0, axe=None, yscale='log'):
+def plotAssympConvRate( grid, r2, q2, dt=1., nu=0, axe=None, yscale='log', 
+                        legend=True):
     ''' Plot assymptotical convergence in spectral space
     
     :Parameters:
@@ -168,11 +171,12 @@ def plotAssympConvRate(grid, r2, q2, dt=1., nu=0, axe=None, yscale='log'):
     axe.set_yscale(yscale)
     axe.set_xlabel('wavenumber $k$')
     axe.set_title('Assymptotical convergence rate spectrum')
-    axe.legend(loc='best')
+    if legend : axe.legend(loc='best')
 
     return axe
 
-def plotViscAssympConv(grid, nuList, r2, q2, dt=1., axe=None, yscale='log'):
+def plotViscAssympConv( grid, nuList, r2, q2, dt=1., axe=None, yscale='log',
+                        legend=True):
     ''' Plot assymptotical convergence in spectral space for different 
     viscosity coefficients.
     
@@ -199,12 +203,13 @@ def plotViscAssympConv(grid, nuList, r2, q2, dt=1., axe=None, yscale='log'):
     axe.set_yscale(yscale)
     axe.set_xlabel('wavenumber $k$')
     axe.set_title('Assymptotical convergence spectrum')
-    axe.legend(loc='best')
+    if legend : axe.legend(loc='best')
 
     return axe
 
 
-def plotViscAssympVar(grid, nuList, r2, q2, dt=1., axe=None, yscale='log'):   
+def plotViscAssympVar(  grid, nuList, r2, q2, dt=1., axe=None, yscale='log',
+                        legend=True):   
     ''' Plot assymptotical forecast variance in spectral space for different 
     viscosity coefficients.
     
@@ -231,6 +236,6 @@ def plotViscAssympVar(grid, nuList, r2, q2, dt=1., axe=None, yscale='log'):
     axe.set_yscale(yscale)
     axe.set_xlabel('wavenumber $k$')
     axe.set_title('Assymptotical forecast variance spectrum')
-    axe.legend(loc='best')
+    if legend : axe.legend(loc='best')
 
     return axe

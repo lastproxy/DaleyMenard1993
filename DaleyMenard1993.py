@@ -50,10 +50,13 @@ axe.set_title('Assymptotical variances and convergence rate')
 
 
 # -- viscosity impact
-nuFactorList  = np.array([0, .001, 0.01])
+nuFactorList  = np.array([-0.01, -0.001, 0, .001, 0.01])
 nuList  =  nuFactorList/dt*a**2
 plt.figure()
-ax1 = plotViscAssympVar(grid, nuList, r2, q2, dt=dt, axe=plt.subplot(211))
+ax1 = plotViscAssympVar(grid, nuList, r2, q2, dt=dt, axe=plt.subplot(211), 
+                        legend=False)
 ax1.set_xlabel('')
 ax1.set_xticks(())
-ax2 = plotViscAssympConv(grid, nuList, r2, q2, dt=dt, axe=plt.subplot(212))
+ax2 = plotViscAssympConv(   grid, nuList, r2, q2, dt=dt, axe=plt.subplot(212),
+                            legend=False)
+ax2.legend(loc='upper left')
