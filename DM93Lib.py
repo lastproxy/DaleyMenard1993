@@ -1,6 +1,11 @@
 import numpy as np 
 from gridCls import Grid
 
+
+def analSpVar(f2n, r2, q2):
+    ''' Analysis spectral variance '''
+    return (r2*f2n)/(r2+f2n)
+
 def modelSpPropagator(grid, k=None, dt=1., nu=0):
     ''' Model spectral propagator
 
@@ -19,7 +24,9 @@ def modelSpPropagator(grid, k=None, dt=1., nu=0):
     return np.exp(2.*nu*np.pi*dt*k**2/grid.L**2)
 
 def fcstSpVarPropagator(grid, f2n, r2, q2, k=None, dt=1., nu=0):
-    ''' Forecast variance propagator
+    ''' Forecast variance propagator 
+   
+    (noted G in the article)
     
     :Parameters:
         grid : `Grid`
@@ -120,4 +127,18 @@ def spVarStationary(grid, r2, q2, k=None, dt=1., nu=0):
                 alpha - r2 - np.sqrt(beta)
                 )
     
-    
+def convRate(grid, f2n, r2, q2, k=None, dt=1., nu=0):
+    ''' Convergence rate
+    '''
+    m = modelSpPropagator(grid, k=k, dt=dt, nu=nu)
+    return (m**2*r2 + q2 - f2n)/(f2n + r2)
+
+
+def convRateAssymp(grid, r2, q2, k=None, dt=1., nu=0):
+    ''' Assymptotic convergence rate
+    '''
+    m = modelSpPropagator(grid, k=k, dt=dt, nu=nu)
+    alpha = 0.5 * (q2 + r2*(m**2+1.))
+    beta = alpha**2 - m**2*r2**2
+    return (alpha - np.sqrt(beta))/(alpha + np.sqrt(beta))
+

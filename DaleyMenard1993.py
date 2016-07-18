@@ -1,7 +1,9 @@
 import numpy as np 
 from gridCls import Grid
 from corrModelLib import Uncorrelated, Soar
-from DM93PlotLib import plotCorrPowSpectra, plotImageGF2
+from DM93PlotLib import (   plotCorrPowSpectra, plotImageGF2, plotAssympVar,
+                            plotAssympConvRate
+                            )
 
 # -- Grid
 a = 2500.
@@ -10,7 +12,8 @@ N = 24
 grid = Grid(N, L)
 
 # -- viscosity
-nu = 0
+nu = -1e5
+#nu =0
 
 # -- Correlations
 corrObs = Uncorrelated(grid)
@@ -31,8 +34,13 @@ nIter = 5
 plt.figure()
 f20=-0.01
 k = 18
-axe = plotImageGF2( grid, k, r2, q2, f20=f20, nu=0, 
-                    nIter=nIter, axe=plt.subplot(111)
-                    )
+axe = plotImageGF2( grid, k, r2, q2, f20=f20, nu=nu, nIter=nIter)
+
+# -- assymptotical variances spectrum
+plt.figure()
+axe = plotAssympVar(grid, r2, q2, nu=nu, axe=plt.subplot(111))
+# -- assymptotical convergence spectrum
+axe = plotAssympConvRate(grid, r2, q2, nu=nu, axe=axe)
+axe.set_title('Assymptotical variances and convergence rate')
 
 
