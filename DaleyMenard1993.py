@@ -30,7 +30,7 @@ axe = plotCorrPowSpectra(grid, r2, q2)
 nIter = 5
 plt.figure()
 f20=-0.01
-k = 3
+k = 18
 axe = plotImageGF2( grid, k, r2, q2, f20=f20, nu=0, 
                     nIter=nIter, axe=plt.subplot(111)
                     )

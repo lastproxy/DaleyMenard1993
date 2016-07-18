@@ -56,8 +56,44 @@ def fcstSpVarPropagator(grid, f2n, r2, q2, k=None, dt=1., nu=0):
     m = modelSpPropagator(grid, k=k, dt=dt, nu=nu)
     return m**2*r2*f2n/(r2+f2n) + q2
 
+
+
+def varItGenerator(grid, f2n, r2, q2, nIter=10, k=None, dt=1., nu=0):
+    ''' Forecast variance iteration generator
+    
+    :Parameters:
+        grid : `Grid`
+            Periodic 1D grid
+        f2n : float | np.ndarray
+            Initial forecast variance.
+            If float provided, both `r2` and `q2` must be `float` as well, 
+            the corresponding wavenumber power spectrum component, and `k`
+            must be provided as an `int` (the wavenumber).
+        r2 : float | np.ndarray
+            Observation error correlation power spectra or component
+        q2 : float | np.ndarray
+            Model error correlation power spectra or component
+        nIter : int
+            Maximal number of iterations
+        k : int | None
+            If not provided (or == None), then all spectrum is propagated
+            and `f2n`, `r2` and `q2` must be arrays (full spectra).
+        dt : float
+            Time increment
+        nu : float
+            Viscosity coefficient
+    '''
+    i = 0
+    while i < nIter:
+        f2n = fcstSpVarPropagator(grid, f2n, r2, q2, k=k, dt=dt, nu=nu)
+        yield f2n
+        i += 1
+
+
 def spVarStationary(grid, r2, q2, k=None, dt=1., nu=0):
-    ''' Spectral variance stationary physical solution
+    ''' Spectral variance stationary solutions.
+    Returns the two solutions, the first being the physical stable one, 
+    the second unphysical and unstable.
 
     :Parameters:
         grid : `Grid`
@@ -80,6 +116,8 @@ def spVarStationary(grid, r2, q2, k=None, dt=1., nu=0):
     m = modelSpPropagator(grid, k=k, dt=dt, nu=nu)
     alpha = 0.5 * (q2 + r2*(m**2+1.))
     beta = alpha**2 - m**2*r2**2
-    return alpha - r2 + np.sqrt(beta)
+    return (    alpha - r2 + np.sqrt(beta),
+                alpha - r2 - np.sqrt(beta)
+                )
     
     
