@@ -29,7 +29,7 @@ def plotCorrPowSpectra(grid, r2, q2, axe=None):
     
 
 
-def plotImageGF2(   grid, k, r2, q2, f20=0, nu=0, nIter=5, 
+def plotImageGF2(   grid, k, r2, q2, f20=0, dt=1., nu=0, nIter=5, 
                     axe=None, annotate=True, limAmpl=1.2):
     ''' Plot G(f2) phase space and iterations convergence 
     
@@ -52,15 +52,18 @@ def plotImageGF2(   grid, k, r2, q2, f20=0, nu=0, nIter=5,
     convG = list()
     
     f2n = f20
-    for g in varItGenerator(grid, f20, r2[k], q2[k], nIter=nIter, k=k, nu=nu):
+    for g in varItGenerator(grid, f20, r2[k], q2[k], nIter=nIter, 
+                            k=k, dt=dt, nu=nu):
         convF2.append(f2n)
         f2n = g
         convG.append(f2n)
 
     # -- stationary solution
-    f2Plus, f2Minus = spVarStationary(grid, r2[k], q2[k], k=k, nu=nu)
-    GF2Plus = fcstSpVarPropagator(grid, f2Plus, r2[k], q2[k], k=k, nu=nu)
-    GF2Minus = fcstSpVarPropagator(grid, f2Minus, r2[k], q2[k], k=k, nu=nu)
+    f2Plus, f2Minus = spVarStationary(grid, r2[k], q2[k], k=k, dt=dt, nu=nu)
+    GF2Plus = fcstSpVarPropagator(  grid, f2Plus, r2[k], q2[k], 
+                                    k=k, dt=dt, nu=nu)
+    GF2Minus = fcstSpVarPropagator( grid, f2Minus, r2[k], q2[k], 
+                                    k=k, dt=dt, nu=nu)
     
     # -- plotting convergence iterates
     for i, (f2, g) in enumerate(zip(convF2, convG)):
@@ -80,7 +83,8 @@ def plotImageGF2(   grid, k, r2, q2, f20=0, nu=0, nIter=5,
     domF2 = np.linspace(limAmpl*minF2, limAmpl*maxF2, 1000)
     imGF2 = list()
     for f2 in domF2:
-        imGF2.append(fcstSpVarPropagator(grid, f2, r2[k], q2[k], k=k, nu=nu))
+        imGF2.append(fcstSpVarPropagator(   grid, f2, r2[k], q2[k],
+                                            k=k, dt=dt, nu=nu))
     
     # -- stationary solutions
     axe.plot(f2Plus, GF2Plus, 's', color='g', label=r'$\overline{f}_+^2$')
@@ -105,7 +109,7 @@ def plotImageGF2(   grid, k, r2, q2, f20=0, nu=0, nIter=5,
     return axe
 
 
-def plotAssympVar(grid, r2, q2, nu=0., axe=None, scale='log'):
+def plotAssympVar(grid, r2, q2, dt=1., nu=0., axe=None, scale='log'):
     ''' Plot assymptotical variances (forecast and analysis) spectra
     
     :Parameters:
@@ -121,7 +125,7 @@ def plotAssympVar(grid, r2, q2, nu=0., axe=None, scale='log'):
     if axe==None:
         axe = plt.subplot(111)
 
-    f2Plus = spVarStationary(grid, r2, q2, nu=nu)[0]
+    f2Plus = spVarStationary(grid, r2, q2, dt=dt, nu=nu)[0]
     analPlus = analSpVar(f2Plus, r2, q2)
 
     axe.plot(grid.k, f2Plus, label=r'$\overline{f}_+^2$')
@@ -135,7 +139,7 @@ def plotAssympVar(grid, r2, q2, nu=0., axe=None, scale='log'):
     return axe
 
 
-def plotAssympConvRate(grid, r2, q2, nu=0, axe=None, scale='log'):
+def plotAssympConvRate(grid, r2, q2, dt=1., nu=0, axe=None, scale='log'):
     ''' Plot assymptotical convergence in spectral space
     
     :Parameters:
@@ -152,7 +156,7 @@ def plotAssympConvRate(grid, r2, q2, nu=0, axe=None, scale='log'):
     if axe==None:
         axe = plt.subplot(111)
     
-    cPlus = convRateAssymp(grid, r2, q2, nu=nu)
+    cPlus = convRateAssymp(grid, r2, q2, dt=dt, nu=nu)
     axe.plot(grid.k, cPlus, label=r'$\overline{c}_+$')
 
     axe.set_yscale(scale)
