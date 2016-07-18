@@ -21,7 +21,7 @@ def modelSpPropagator(grid, k=None, dt=1., nu=0):
     '''
     if k==None:
         k = grid.k
-    return np.exp(2.*nu*np.pi*dt*k**2/grid.L**2)
+    return np.exp(-2.*nu*np.pi*dt*k**2/grid.L**2)
 
 def fcstSpVarPropagator(grid, f2n, r2, q2, k=None, dt=1., nu=0):
     ''' Forecast variance propagator 

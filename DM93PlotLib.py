@@ -42,6 +42,8 @@ def plotImageGF2(   grid, k, r2, q2, f20=0, dt=1., nu=0, nIter=5,
             Observation error correlation power spectra
         q2 : np.ndarray
             Model error correlation power spectra
+        dt : float
+            Time increment
         nu : float
             Viscosity coefficient
     '''
@@ -109,7 +111,7 @@ def plotImageGF2(   grid, k, r2, q2, f20=0, dt=1., nu=0, nIter=5,
     return axe
 
 
-def plotAssympVar(grid, r2, q2, dt=1., nu=0., axe=None, scale='log'):
+def plotAssympVar(grid, r2, q2, dt=1., nu=0., axe=None, yscale='log'):
     ''' Plot assymptotical variances (forecast and analysis) spectra
     
     :Parameters:
@@ -119,6 +121,8 @@ def plotAssympVar(grid, r2, q2, dt=1., nu=0., axe=None, scale='log'):
             Observation error correlation power spectra
         q2 : np.ndarray
             Model error correlation power spectra
+        dt : float
+            Time increment
         nu : float
             Viscosity coefficient
     '''
@@ -131,7 +135,7 @@ def plotAssympVar(grid, r2, q2, dt=1., nu=0., axe=None, scale='log'):
     axe.plot(grid.k, f2Plus, label=r'$\overline{f}_+^2$')
     axe.plot(grid.k, analPlus, label=r'$\overline{a}_+^2$')
 
-    axe.set_yscale(scale)
+    axe.set_yscale(yscale)
     axe.set_xlabel('wavenumber $k$')
     axe.set_title('Assymptotical variances')
     axe.legend(loc='upper right')
@@ -139,7 +143,7 @@ def plotAssympVar(grid, r2, q2, dt=1., nu=0., axe=None, scale='log'):
     return axe
 
 
-def plotAssympConvRate(grid, r2, q2, dt=1., nu=0, axe=None, scale='log'):
+def plotAssympConvRate(grid, r2, q2, dt=1., nu=0, axe=None, yscale='log'):
     ''' Plot assymptotical convergence in spectral space
     
     :Parameters:
@@ -149,6 +153,8 @@ def plotAssympConvRate(grid, r2, q2, dt=1., nu=0, axe=None, scale='log'):
             Observation error correlation power spectra
         q2 : np.ndarray
             Model error correlation power spectra
+        dt : float
+            Time increment
         nu : float
             Viscosity coefficient
     '''
@@ -159,9 +165,72 @@ def plotAssympConvRate(grid, r2, q2, dt=1., nu=0, axe=None, scale='log'):
     cPlus = convRateAssymp(grid, r2, q2, dt=dt, nu=nu)
     axe.plot(grid.k, cPlus, label=r'$\overline{c}_+$')
 
-    axe.set_yscale(scale)
+    axe.set_yscale(yscale)
     axe.set_xlabel('wavenumber $k$')
     axe.set_title('Assymptotical convergence rate spectrum')
+    axe.legend(loc='best')
+
+    return axe
+
+def plotViscAssympConv(grid, nuList, r2, q2, dt=1., axe=None, yscale='log'):
+    ''' Plot assymptotical convergence in spectral space for different 
+    viscosity coefficients.
+    
+    :Parameters:
+        grid : `Grid`
+            Periodic 1D grid
+        nuList : list(float)
+            List of viscosity coefficients
+        r2 : np.ndarray
+            Observation error correlation power spectra
+        q2 : np.ndarray
+            Model error correlation power spectra
+        dt : float
+            Time increment
+    '''
+    
+    if axe==None:
+        axe = plt.subplot(111)
+    
+    for nu in nuList:
+        cPlus = convRateAssymp(grid, r2, q2, dt=dt, nu=nu)
+        axe.plot(grid.k, cPlus, label=r'$\nu=%.1e$'%nu)
+    
+    axe.set_yscale(yscale)
+    axe.set_xlabel('wavenumber $k$')
+    axe.set_title('Assymptotical convergence spectrum')
+    axe.legend(loc='best')
+
+    return axe
+
+
+def plotViscAssympVar(grid, nuList, r2, q2, dt=1., axe=None, yscale='log'):   
+    ''' Plot assymptotical forecast variance in spectral space for different 
+    viscosity coefficients.
+    
+    :Parameters:
+        grid : `Grid`
+            Periodic 1D grid
+        nuList : list(float) | np.ndarray(float)
+            List of viscosity coefficients
+        r2 : np.ndarray
+            Observation error correlation power spectra
+        q2 : np.ndarray
+            Model error correlation power spectra
+        dt : float
+            Time increment
+    '''
+    
+    if axe==None:
+        axe = plt.subplot(111)
+    
+    for nu in nuList:
+        f2Plus = spVarStationary(grid, r2, q2, dt=dt, nu=nu)[0]
+        axe.plot(grid.k, f2Plus, label=r'$\nu=%.1e$'%nu)
+    
+    axe.set_yscale(yscale)
+    axe.set_xlabel('wavenumber $k$')
+    axe.set_title('Assymptotical forecast variance spectrum')
     axe.legend(loc='best')
 
     return axe
