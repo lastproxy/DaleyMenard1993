@@ -40,6 +40,6 @@ for i in xrange(10):
     convG.append(f2n)
 
 plt.figure()
-kRef= 0
 for f2, g in zip(convF2, convG):
-    plt.plot(f2[kRef], g[kRef], 'ob')
+    plt.plot(f2[0], g[0], 'ob')
+    plt.plot(f2[N], g[N], 'or')
