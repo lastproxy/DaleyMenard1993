@@ -1,14 +1,17 @@
 import numpy as np 
 import matplotlib.pyplot as plt
-from DM93 import Grid, Uncorrelated, Foar, Soar, Gaussian,
+from DM93 import Grid, Uncorrelated, Foar, Soar, Gaussian
 
-# -- grid definition
-#       units of space = m and time = s
+#====================================================================
+#===| setup and configuration |======================================
 
+# -- units of space: m 
 km = 1000.
-a = 2500. * km 
+
+# -- discretization
+a = 2500.*km
 L = 2.*np.pi * a
-N = 48
+N = 24
 grid = Grid(N, L)
 
 Lc = a/4.
@@ -20,6 +23,9 @@ corrModels = {  'uncorrelated' : Uncorrelated(grid),
                 'gaussian' : Gaussian(grid, Lc),
                 }
 
+
+#====================================================================
+#===| plots |========================================================
 
 fig = plt.figure()
 fig.subplots_adjust(hspace=0.4)
@@ -37,3 +43,5 @@ axSpec.set_title('Normalized power spectrum')
 axSpec.set_xlabel('wavenumber $k$')
 
 axSpec.legend(loc='best')
+
+plt.show()
