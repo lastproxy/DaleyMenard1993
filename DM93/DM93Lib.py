@@ -3,7 +3,18 @@ from gridCls import Grid
 
 
 def analSpVar(f2n, r2, q2):
-    ''' Analysis spectral variance '''
+    ''' Analysis spectral variance 
+    
+    :Parameters:
+        f2n : float | np.ndarray
+            Initial forecast variance.
+            If float provided, both `r2` and `q2` must be `float` as well, 
+            the corresponding wavenumber power spectrum component.
+        r2 : float | np.ndarray
+            Observation error correlation power spectra or component
+        q2 : float | np.ndarray
+            Model error correlation power spectra or component
+    '''
     return (r2*f2n)/(r2+f2n)
 
 def modelSpPropagator(grid, k=None, dt=1., nu=0):
@@ -129,6 +140,24 @@ def spVarStationary(grid, r2, q2, k=None, dt=1., nu=0):
     
 def convRate(grid, f2n, r2, q2, k=None, dt=1., nu=0):
     ''' Convergence rate
+    
+    :Parameters:
+        f2n : float | np.ndarray
+            Initial forecast variance.
+            If float provided, `q2` must be `float` as well, 
+            the corresponding wavenumber power spectrum component, and `k`
+            must be provided as an `int` (the wavenumber).
+        r2 : float | np.ndarray
+            Observation error correlation power spectra or component
+        q2 : float | np.ndarray
+            Model error correlation power spectra or component
+        k : int | None
+            If not provided (or == None), then all spectrum is propagated
+            and `f2n`, `r2` and `q2` must be arrays (full spectra).
+        dt : float
+            Time increment
+        nu : float
+            Viscosity coefficient
     '''
     m = modelSpPropagator(grid, k=k, dt=dt, nu=nu)
     return (m**2*r2 + q2 - f2n)/(f2n + r2)
@@ -136,6 +165,24 @@ def convRate(grid, f2n, r2, q2, k=None, dt=1., nu=0):
 
 def convRateAssymp(grid, r2, q2, k=None, dt=1., nu=0):
     ''' Assymptotic convergence rate
+    
+    :Parameters:
+        f2n : float | np.ndarray
+            Initial forecast variance.
+            If float provided, `q2` must be `float` as well, 
+            the corresponding wavenumber power spectrum component, and `k`
+            must be provided as an `int` (the wavenumber).
+        r2 : float | np.ndarray
+            Observation error correlation power spectra or component
+        q2 : float | np.ndarray
+            Model error correlation power spectra or component
+        k : int | None
+            If not provided (or == None), then all spectrum is propagated
+            and `f2n`, `r2` and `q2` must be arrays (full spectra).
+        dt : float
+            Time increment
+        nu : float
+            Viscosity coefficient
     '''
     m = modelSpPropagator(grid, k=k, dt=dt, nu=nu)
     alpha = 0.5 * (q2 + r2*(m**2+1.))
