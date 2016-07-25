@@ -17,22 +17,52 @@ def analSpVar(f2n, r2, q2):
     '''
     return (r2*f2n)/(r2+f2n)
 
-def modelSpPropagator(grid, k=None, dt=1., nu=0):
+def modelSpPropagator(grid, U, dt=1., nu=0):
     ''' Model spectral propagator
 
     :Parameters:
         grid : `Grid`
             Periodic 1D grid
-        k : int | None
-            If not provided (or == None), then all spectrum is propagated.
+        U : float
+            Constant zonal wind speed
         dt : float
             Time increment
         nu : float
             Viscosity coefficient
     '''
-    if k==None:
-        k = grid.halfK
-    return np.exp(-2.*nu*np.pi*dt*k**2/grid.L**2)
+    MSpec = np.zeros(shape=(grid.J, grid.J))
+    MSpec[0,0] = 1.
+    for j in xrange(1,grid.N+1):
+        phi = 2.*np.pi*j*U*dt/grid.L
+        ampl = np.exp(-4.*np.pi**2*nu*dt*j**2/grid.L**2)
+        MSpec[2*j-1, 2*j-1] = ampl * np.cos(phi)
+        MSpec[2*j, 2*j-1]   = ampl * np.sin(phi)
+        MSpec[2*j-1, 2*j]   = -ampl * np.sin(phi)
+        MSpec[2*j, 2*j]     = ampl * np.cos(phi)
+    return MSpec
+
+def modelGridPropagator(grid, U, dt=1., nu=0):
+    ''' Model grid-space propagator
+
+    The grid-space propagator is obtained from the spectral propagator
+    by inverse 2D Fourier transform.  
+    If S is the spectral propagator and F the Fourier transform matrix
+    and F' its transpose (and inverse), then M the grid-space propagator
+    is simply: M = F.S.F'
+
+    :Parameters:
+        grid : `Grid`
+            Periodic 1D grid
+        U : float
+            Constant zonal wind speed
+        dt : float
+            Time increment
+        nu : float
+            Viscosity coefficient
+    '''
+    MSpec = modelSpPropagator(grid, U, dt=dt, nu=nu)
+    M = np.dot(np.dot(grid.F, MSpec), grid.F.T)
+    return M
 
 def fcstSpVarPropagator(grid, f2n, r2, q2, k=None, dt=1., nu=0):
     ''' Forecast variance propagator 
@@ -71,8 +101,8 @@ def fcstSpVarPropagator(grid, f2n, r2, q2, k=None, dt=1., nu=0):
         assert isinstance(f2n, np.ndarray)
         
 
-    m = modelSpPropagator(grid, k=k, dt=dt, nu=nu)
-    return m**2*r2*f2n/(r2+f2n) + q2
+    m2 = np.exp(-4.*nu*np.pi*dt*k**2/grid.L**2)
+    return m2*r2*f2n/(r2+f2n) + q2
 
 
 
@@ -131,9 +161,9 @@ def spVarStationary(grid, r2, q2, k=None, dt=1., nu=0):
         nu : float
             Viscosity coefficient
     '''
-    m = modelSpPropagator(grid, k=k, dt=dt, nu=nu)
-    alpha = 0.5 * (q2 + r2*(m**2+1.))
-    beta = alpha**2 - m**2*r2**2
+    m2 = np.exp(-4.*nu*np.pi*dt*k**2/grid.L**2)
+    alpha = 0.5 * (q2 + r2*(m2+1.))
+    beta = alpha**2 - m2*r2**2
     return (    alpha - r2 + np.sqrt(beta),
                 alpha - r2 - np.sqrt(beta)
                 )
@@ -159,8 +189,8 @@ def convRate(grid, f2n, r2, q2, k=None, dt=1., nu=0):
         nu : float
             Viscosity coefficient
     '''
-    m = modelSpPropagator(grid, k=k, dt=dt, nu=nu)
-    return (m**2*r2 + q2 - f2n)/(f2n + r2)
+    m2 = np.exp(-4.*nu*np.pi*dt*k**2/grid.L**2)
+    return (m2*r2 + q2 - f2n)/(f2n + r2)
 
 
 def convRateAssymp(grid, r2, q2, k=None, dt=1., nu=0):
@@ -184,8 +214,8 @@ def convRateAssymp(grid, r2, q2, k=None, dt=1., nu=0):
         nu : float
             Viscosity coefficient
     '''
-    m = modelSpPropagator(grid, k=k, dt=dt, nu=nu)
-    alpha = 0.5 * (q2 + r2*(m**2+1.))
-    beta = alpha**2 - m**2*r2**2
+    m2 = np.exp(-4.*nu*np.pi*dt*k**2/grid.L**2)
+    alpha = 0.5 * (q2 + r2*(m2+1.))
+    beta = alpha**2 - m2*r2**2
     return (alpha - np.sqrt(beta))/(alpha + np.sqrt(beta))
 
