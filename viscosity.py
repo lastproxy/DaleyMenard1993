@@ -56,8 +56,8 @@ axConv = plt.subplot(212)
 
 nuFStr = r'$\frac{\nu\Delta t}{a^2}=$'
 for nuF in nuFactors:
-    axVar.plot(grid.k, f2Plus[nuF], label='%s %.3f'%(nuFStr, nuF))
-    axConv.plot(grid.k, cPlus[nuF], label='%s %.3f'%(nuFStr, nuF))
+    axVar.plot(grid.halfK, f2Plus[nuF], label='%s %.3f'%(nuFStr, nuF))
+    axConv.plot(grid.halfK, cPlus[nuF], label='%s %.3f'%(nuFStr, nuF))
 
 axVar.set_yscale('log')
 axConv.set_yscale('log')

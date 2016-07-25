@@ -49,9 +49,9 @@ cPlus = convRateAssymp(grid, r2, q2, dt=dt, nu=nu)
 fig = plt.figure()
 axe = plt.subplot(111)
 
-axe.plot(grid.k, f2Plus, label=r'$\overline{f}_+^2$')
-axe.plot(grid.k, analPlus, label=r'$\overline{a}_+^2$')
-axe.plot(grid.k, cPlus, label=r'$\overline{c}_+$')
+axe.plot(grid.halfK, f2Plus, label=r'$\overline{f}_+^2$')
+axe.plot(grid.halfK, analPlus, label=r'$\overline{a}_+^2$')
+axe.plot(grid.halfK, cPlus, label=r'$\overline{c}_+$')
 
 axe.set_yscale('log')
 axe.set_xlabel('wavenumber $k$')

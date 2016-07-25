@@ -18,10 +18,10 @@ class Grid(object):
             Fourier transform matrix (unitary)
 
     :Methods:
-        fourier : None
-            return direct Fourier transform matrix
-        invFourier : None
-            return inverse Fourier transform matrix
+        transform : numpy.ndarray(shape=self.J)
+            return direct Fourier transform of signal
+        inverse : numpy.ndarray(shape=self.J)
+            return inverse Fourier transform of spectra
             
     '''
     
@@ -31,15 +31,17 @@ class Grid(object):
         self.J = 2*self.N+1 
 
 
-        self.k = np.array(range(self.N+1), dtype=float)
-        self._allK = np.array(range(-self.N,self.N+1), dtype=float)
+        self.halfK = np.array(range(self.N+1), dtype=float)
+        self.k = np.array(range(-self.N,self.N+1), dtype=float)
 
         self.x = np.array(  [   self.L*k/(2.*self.N +1.) 
-                                for k in self._allK
+                                for k in self.k
                                 ])
-        self.F = self._fourier()
+        
+        self.F = self._fourierMatrix()
 
-    def _fourier(self):
+    def _fourierMatrix(self):
+        ''' Build real unitary Fourier matrix '''
         F = np.zeros(shape=(self.J, self.J))
         
         F[:,0] = 1./np.sqrt(2.)
@@ -51,4 +53,25 @@ class Grid(object):
                 F[self.N+j, 2*n]    = np.sin(2.*np.pi*n*self.x[self.N+j]/(self.L))
 
         F *= np.sqrt(2./self.J)
+
+        # -- test unitarity
+        np.testing.assert_array_almost_equal(np.dot(F, F.T), np.eye(self.J), decimal=14)
         return F
+
+    def transform(self, x):
+        ''' Fourier transform 
+        
+        :Parameters:
+            x : numpy.ndarray
+                signal
+        '''
+        return np.dot(self.F, x)
+
+    def inverse(self, sp):
+        ''' Inverse fourier transform
+
+        :Parameters:
+            sp : numpy.ndarray
+                spectrum
+        '''
+        return np.dot(self.F.T, sp)

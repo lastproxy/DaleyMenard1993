@@ -33,7 +33,7 @@ for label, cm in corrModels.iteritems():
     axGrid = plt.subplot(211)
     axSpec = plt.subplot(212)
     axGrid.plot(grid.x, cm.corrFunc(), label=label)
-    axSpec.plot(grid.k, cm.powSpec(), label=label)
+    axSpec.plot(grid.halfK, cm.powSpec(), label=label)
 
 axGrid.set_title('Correlation $L_c=%.1e$ m'%Lc)
 axGrid.set_xticks(np.floor([-grid.L/4., 0., grid.L/4.]))
