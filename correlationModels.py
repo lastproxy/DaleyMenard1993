@@ -27,21 +27,27 @@ corrModels = {  'uncorrelated' : Uncorrelated(grid),
 #====================================================================
 #===| plots |========================================================
 
-fig = plt.figure()
-fig.subplots_adjust(hspace=0.4)
+fig = plt.figure(figsize=(8,8))
+fig.subplots_adjust(hspace=0.6)
 for label, cm in corrModels.iteritems():
-    axGrid = plt.subplot(211)
-    axSpec = plt.subplot(212)
+    axGrid = plt.subplot(311)
+    axSpTh = plt.subplot(312)
+    axSpNu = plt.subplot(313)
     axGrid.plot(grid.x, cm.corrFunc(), label=label)
-    axSpec.plot(grid.halfK, cm.powSpec(), label=label)
+    axSpTh.plot(grid.halfK, cm.powSpecTh(), label=label)
+
+    axSpNu.plot(grid.halfK, cm.powSpecNum(), label=label)
 
 axGrid.set_title('Correlation $L_c=%.1e$ m'%Lc)
 axGrid.set_xticks(np.floor([-grid.L/4., 0., grid.L/4.]))
 axGrid.set_xlabel('distance [m]')
 
-axSpec.set_title('Normalized power spectrum')
-axSpec.set_xlabel('wavenumber $k$')
+axSpTh.set_title('Normalized theoretical power spectrum')
+axSpTh.set_xlabel('wavenumber $k$')
 
-axSpec.legend(loc='best')
+axSpNu.set_title('Normalized numerical power spectrum')
+axSpNu.set_xlabel('wavenumber $k$')
+
+axSpNu.legend(loc='best')
 
 plt.show()

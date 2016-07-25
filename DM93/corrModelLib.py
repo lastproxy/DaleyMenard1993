@@ -2,7 +2,22 @@
 import numpy as np
 
 class CorrModel(object):
-    ''' Correlation model template class '''
+    ''' Correlation model template class 
+    <!> Not to be instantiated: for derivation purpose only <!>
+
+    Derived class need to provide at least `_func()` method with 
+    prototype::
+
+        def _func(self, r, Lp)
+
+    where ``r`` is a semi-positive float, the distance, and ``Lp`` 
+    a model-specific length parameter (it is not the correlation length).
+
+    Optionnaly, one could also override `powSpecTh()` which is meant
+    to return the theoritical power spectrum.
+
+    '''
+
     def __init__(self, grid, Lc):
         self.grid = grid
         self.Lc = Lc
@@ -13,8 +28,17 @@ class CorrModel(object):
         f = np.vectorize(self._func)
         return f(self.grid.x, self.Lp)
 
-    def powSpec(self): 
+    def powSpecTh(self): 
         raise NotImplementedError()
+
+    def powSpecNum(self): 
+        tf = self.grid.transform(self.corrFunc())
+        # -- keep semi-positive wavenumbers only
+        tf = tf[self.grid.N:]
+        sp = tf ** 2
+        # -- normalize power spectrum
+        sp /= (sp[0]+ 2.*sum(sp[1:]))
+        return sp
 
     def _findEFold(self, maxR=3., res=1000):
         f0 = self._func(0, 1.)
@@ -46,7 +70,7 @@ class Uncorrelated(CorrModel):
         else:
             return 0.
 
-    def powSpec(self):
+    def powSpecTh(self):
         return np.ones(self.grid.halfK.shape)/self.grid.J
 
 class Foar(CorrModel):
@@ -55,7 +79,7 @@ class Foar(CorrModel):
         x = np.abs(x)/Lp
         return np.exp(-x)
         
-    def powSpec(self):
+    def powSpecTh(self):
         q = 2.*np.pi*self.grid.halfK/self.grid.L
         sp = (1. + q**2*self.Lp**2)**-1
         sp /= (sp[0]+ 2.*sum(sp[1:]))
@@ -67,7 +91,7 @@ class Soar(CorrModel):
         x = np.abs(x)/Lp
         return (1.+ x)*np.exp(-x)
         
-    def powSpec(self):
+    def powSpecTh(self):
         q = 2.*np.pi*self.grid.halfK/self.grid.L
         sp = (1. + q**2*self.Lp**2)**-2
         sp /= (sp[0]+ 2.*sum(sp[1:]))
@@ -78,7 +102,7 @@ class Gaussian(CorrModel):
     def _func(self, x, Lp):
         return np.exp(-x**2/(2.*Lp**2))
         
-    def powSpec(self):
+    def powSpecTh(self):
         q = 2.*np.pi*self.grid.halfK/self.grid.L
         sp = np.exp(-q**2*self.Lp**2/2)
         sp /= (sp[0]+ 2.*sum(sp[1:]))
