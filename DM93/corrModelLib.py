@@ -47,7 +47,7 @@ class Uncorrelated(CorrModel):
             return 0.
 
     def powSpec(self):
-        return np.ones(self.grid.k.shape)/self.grid.nGP
+        return np.ones(self.grid.k.shape)/self.grid.J
 
 class Foar(CorrModel):
     ''' First order autoregressive correlation model '''
