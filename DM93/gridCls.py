@@ -55,7 +55,7 @@ class Grid(object):
         F *= np.sqrt(2./self.J)
 
         # -- test unitarity
-        np.testing.assert_array_almost_equal(np.dot(F, F.T), np.eye(self.J))
+        np.testing.assert_array_almost_equal(F.dot(F.T), np.eye(self.J))
         return F
 
     def transform(self, x):

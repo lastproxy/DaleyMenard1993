@@ -27,12 +27,13 @@ corrObs = Uncorrelated(grid)
 Lc = a/6.
 corrMod = Soar(grid, Lc)
 
-# -- correlation power spectra
-r2 = corrObs.powSpec()
-q2 = corrMod.powSpec()
-
 #====================================================================
 #===| computations |=================================================
+
+# -- correlation power spectra
+r2 = corrObs.powSpecTh()
+q2 = corrMod.powSpecTh()
+
 
 f2Plus = dict()
 cPlus = dict()

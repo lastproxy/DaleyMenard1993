@@ -17,10 +17,10 @@ a = 2500.*km
 L = 2.*np.pi * a
 N = 24
 grid = Grid(N, L)
-dt =6.*h
+dt =1.*h
 
 # -- zonal wind
-U = 100.*km/h
+U = 20.*km/h
 
 # -- viscosity
 nuFactor = 0.
@@ -31,9 +31,10 @@ ic = np.sin(2.*pi*grid.x/grid.L)
 
 # -- integration 
 MSpec = modelSpPropagator(grid, U, dt=dt, nu=nu)
-M = np.dot(np.dot(grid.F, MSpec), grid.F.T)
+M = (grid.F.dot(MSpec)).dot(grid.F.T)
 
 nDt = 200
+times = np.array([i*dt for i in xrange(nDt+1)])
 
 #====================================================================
 #===| computations |=================================================
@@ -41,7 +42,7 @@ traj = np.empty(shape=(nDt+1, grid.J))
 x = ic
 for i in xrange(nDt+1):
     traj[i] = x
-    x = np.dot(M, x)
+    x = M.dot(x)
 
 #====================================================================
 #===| plots |========================================================
@@ -49,9 +50,28 @@ for i in xrange(nDt+1):
 fig = plt.figure()
 axe = plt.subplot(111)
 im = axe.matshow(traj, origin='lower')
+
 axe.set_aspect('auto')
-axe.set_xticks(())
-axe.set_ylabel(r'$t$')
-axe.set_ylabel(r'$x$')
+
+axe.set_ylabel(r'$t$ [hours]')
+axe.set_yticklabels(times/h)
+
+axe.set_xlabel(r'$x$ [km]')
+axe.xaxis.set_ticks_position('bottom')
+
+nXTicks = 3
+xticks = list()
+xticklabels = list()
+for i in xrange(nXTicks):
+    gp = grid.J/(nXTicks-1)*i
+    xticks.append(gp)
+    if grid.x[gp] == 0:
+        xticklabels.append('%.1e'%(grid.x[gp]/km))
+    else:
+        xticklabels.append('%.1e'%(grid.x[gp]/km))
+axe.set_xticks(xticks)
+axe.set_xticklabels(xticklabels)
+
 plt.colorbar(im)
+plt.show()
 

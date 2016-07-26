@@ -28,12 +28,12 @@ corrObs = Uncorrelated(grid)
 Lc = a/6.
 corrMod = Soar(grid, Lc)
 
-# -- correlation power spectra
-r2 = corrObs.powSpec()
-q2 = corrMod.powSpec()
-
 #====================================================================
 #===| computations |=================================================
+
+# -- correlation power spectra
+r2 = corrObs.powSpecTh()
+q2 = corrMod.powSpecTh()
 
 # -- assymptotic variances spectra (forecast and analysis respectively)
 f2Plus = spVarStationary(grid, r2, q2, dt=dt, nu=nu)[0]

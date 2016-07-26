@@ -99,8 +99,8 @@ def fcstSpVarPropagator(grid, f2n, r2, q2, k=None, dt=1., nu=0):
         assert isinstance(q2, np.ndarray)
         assert k == None
         assert isinstance(f2n, np.ndarray)
-        
-
+       
+    if k==None: k = grid.halfK
     m2 = np.exp(-4.*nu*np.pi*dt*k**2/grid.L**2)
     return m2*r2*f2n/(r2+f2n) + q2
 
@@ -161,6 +161,7 @@ def spVarStationary(grid, r2, q2, k=None, dt=1., nu=0):
         nu : float
             Viscosity coefficient
     '''
+    if k==None: k = grid.halfK
     m2 = np.exp(-4.*nu*np.pi*dt*k**2/grid.L**2)
     alpha = 0.5 * (q2 + r2*(m2+1.))
     beta = alpha**2 - m2*r2**2
@@ -189,6 +190,7 @@ def convRate(grid, f2n, r2, q2, k=None, dt=1., nu=0):
         nu : float
             Viscosity coefficient
     '''
+    if k==None: k = grid.halfK
     m2 = np.exp(-4.*nu*np.pi*dt*k**2/grid.L**2)
     return (m2*r2 + q2 - f2n)/(f2n + r2)
 
@@ -214,6 +216,7 @@ def convRateAssymp(grid, r2, q2, k=None, dt=1., nu=0):
         nu : float
             Viscosity coefficient
     '''
+    if k==None: k = grid.halfK
     m2 = np.exp(-4.*nu*np.pi*dt*k**2/grid.L**2)
     alpha = 0.5 * (q2 + r2*(m2+1.))
     beta = alpha**2 - m2*r2**2

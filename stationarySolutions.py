@@ -28,10 +28,6 @@ corrObs = Uncorrelated(grid)
 Lc = a/6.
 corrMod = Soar(grid, Lc)
 
-# -- correlation power spectra
-r2 = corrObs.powSpec()
-q2 = corrMod.powSpec()
-
 # -- wavenumber and initial forecast variance
 k = 10
 f20 = 0.05
@@ -41,6 +37,10 @@ nIter = 5
 
 #====================================================================
 #===| computations |=================================================
+
+# -- correlation power spectra
+r2 = corrObs.powSpecTh()
+q2 = corrMod.powSpecTh()
 
 convF2 = list()
 convG = list()
