@@ -41,7 +41,9 @@ class Grid(object):
 
     :Methods:
         transform : numpy.ndarray(shape=self.J)
-            return direct Fourier transform of signal
+            return direct Fourier transform of signal.
+            The decomposition order is such that the first element is 
+            the constant term followed by sine and cosine terms. 
         inverse : numpy.ndarray(shape=self.J)
             return inverse Fourier transform of spectra
         ticks : int, format
@@ -58,10 +60,8 @@ class Grid(object):
         self.halfK = np.array(range(self.N+1), dtype=float)
         self.k = np.array(range(-self.N,self.N+1), dtype=float)
 
-        self.x = np.array(  [   self.L*k/(2.*self.N +1.) 
-                                for k in self.k
-                                ])
-        self.dx = self.x[1]-self.x[0]
+        self.dx = self.L/self.J
+        self.x = np.linspace(-self.L/2.+self.dx, self.L/2., self.J)
         
         self.F = self._fourierMatrix()
 
@@ -84,8 +84,11 @@ class Grid(object):
         return F
 
     def transform(self, x):
-        ''' Fourier transform 
+        ''' Discrete real fourier transform 
         
+        The decomposition order is such that the first element is 
+        the constant term followed by sine and cosine terms. 
+
         :Parameters:
             x : numpy.ndarray
                 signal
@@ -101,7 +104,7 @@ class Grid(object):
         '''
         return np.dot(self.F.T, sp)
 
-    def ticks(self, nTicks=3, format='%.0f', units=1.):
+    def ticks(self, nTicks=4, format='%.0f', units=1.):
         ''' Return a tuple of ``xticklabels``, ``xticks`` and corresponding 
         indexes for axe formatting.
 

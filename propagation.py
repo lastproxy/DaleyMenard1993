@@ -10,8 +10,8 @@ from DM93 import modelSpPropagator
 execfile('config.py')
 
 # -- initial state
-#ic = np.sin(2.*pi*grid.x/grid.L)
-ic = np.exp(-grid.x**2/(L/6.)**2)
+x0 = grid.L/5.
+ic = np.exp(-(grid.x-x0)**2/(L/6.)**2)
 
 # -- integration
 nDt = 200
@@ -48,7 +48,7 @@ axe.set_yticklabels(times/h)
 axe.set_xlabel(r'$x$ [km]')
 axe.xaxis.set_ticks_position('bottom')
 
-xticklabels, xticks, indexes = grid.ticks(3, units=km)
+xticklabels, xticks, indexes = grid.ticks(units=km)
 axe.set_xticks(indexes)
 axe.set_xticklabels(xticklabels)
 

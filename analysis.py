@@ -58,9 +58,10 @@ axe = plt.subplot(111)
 axe.plot(grid.x, truth, color='k', linewidth=2, label='$x_t$')
 axe.plot(grid.x, xb, color='b', label='$x_b$')
 axe.plot(grid.x, y, color='g', marker='o', linestyle='none', label='$y$')
-axe.plot(grid.x, xa, color='r', linewidth=2, label='$x_t$')
+axe.plot(grid.x, xa, color='r', linewidth=2, label='$x_a$')
 
-xticklabels, xticks = grid.ticks(5, units=km)[:2]
+xticklabels, xticks = grid.ticks(units=km)[:2]
+axe.set_xlabel('$x$ [km]')
 axe.set_xticks(xticks)
 axe.set_xticklabels(xticklabels)
 axe.legend(loc='best')

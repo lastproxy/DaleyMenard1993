@@ -39,8 +39,6 @@ class CorrModel(object):
             correlation matrix
 
     :Methods:
-        powSpecNum : None
-            return power spectrum computed using ``Grid.transform``
         powSpecTh : None
             return analytical power spectrum derived using the infinite
             domain approximation
@@ -67,14 +65,14 @@ class CorrModel(object):
     def powSpecTh(self): 
         raise NotImplementedError()
 
-    def powSpecNum(self): 
-        tf = self.grid.transform(self.corrFunc())
-        # -- keep semi-positive wavenumbers only
-        tf = tf[self.grid.N:]
-        sp = tf ** 2
-        # -- normalize power spectrum
-        sp /= (sp[0]+ 2.*sum(sp[1:]))
-        return sp
+    #def powSpecNum(self): 
+    #    tf = self.grid.transform(self.corrFunc())
+    #    # -- keep semi-positive wavenumbers only
+    #    tf = tf[self.grid.N:]
+    #    sp = tf ** 2
+    #    # -- normalize power spectrum
+    #    sp /= (sp[0]+ 2.*sum(sp[1:]))
+    #    return sp
 
     def _findEFold(self, maxR=3., res=1000):
         f0 = self._func(0, 1.)
