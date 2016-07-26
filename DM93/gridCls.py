@@ -60,8 +60,10 @@ class Grid(object):
         self.halfK = np.array(range(self.N+1), dtype=float)
         self.k = np.array(range(-self.N,self.N+1), dtype=float)
 
-        self.dx = self.L/self.J
-        self.x = np.linspace(-self.L/2.+self.dx, self.L/2., self.J)
+        self.x = np.array(  [   self.L*k/(2.*self.N +1.) 
+                                for k in self.k
+                                ])
+        self.dx = self.x[1]-self.x[0]
         
         self.F = self._fourierMatrix()
 
@@ -104,7 +106,7 @@ class Grid(object):
         '''
         return np.dot(self.F.T, sp)
 
-    def ticks(self, nTicks=4, format='%.0f', units=1.):
+    def ticks(self, nTicks=5, format='%.0f', units=1.):
         ''' Return a tuple of ``xticklabels``, ``xticks`` and corresponding 
         indexes for axe formatting.
 

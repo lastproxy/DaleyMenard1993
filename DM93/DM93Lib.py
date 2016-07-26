@@ -81,7 +81,7 @@ def modelGridPropagator(grid, U, dt=1., nu=0):
             Viscosity coefficient
     '''
     MSpec = modelSpPropagator(grid, U, dt=dt, nu=nu)
-    M = np.dot(np.dot(grid.F, MSpec), grid.F.T)
+    M = (grid.F.dot(MSpec)).dot(grid.F.T)
     return M
 
 def fcstSpVarPropagator(grid, f2n, r2, q2, k=None, dt=1., nu=0):

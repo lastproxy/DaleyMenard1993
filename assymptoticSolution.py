@@ -10,17 +10,18 @@ from DM93 import spVarStationary, analSpVar, convRateAssymp
 execfile('config.py')
 
 # -- Correlations
-corrObs = Uncorrelated(grid)
+obsLc = None
+obsCorr = Uncorrelated(grid, obsLc)
 
-Lc = grid.L/20.
-corrMod = Soar(grid, Lc)
+modLc = grid.L/20.
+modCorr = Soar(grid, modLc)
 
 #====================================================================
 #===| computations |=================================================
 
 # -- correlation power spectra
-r2 = corrObs.powSpecTh()
-q2 = corrMod.powSpecTh()
+r2 = obsCorr.powSpecTh()
+q2 = modCorr.powSpecTh()
 
 # -- assymptotic variances spectra (forecast and analysis respectively)
 f2Plus = spVarStationary(grid, r2, q2, dt=dt, nu=nu)[0]

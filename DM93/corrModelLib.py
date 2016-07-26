@@ -119,7 +119,7 @@ class Uncorrelated(CorrModel):
     ''' Uncorrelated model ''' 
     __doc__ += CorrModel.__doc__
 
-    def __init__(self, grid, **kw):
+    def __init__(self, grid, *args):
         self.grid = grid
         self.Lp = 0.
         self.eFold = 0.
