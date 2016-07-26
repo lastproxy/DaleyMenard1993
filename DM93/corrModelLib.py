@@ -12,10 +12,9 @@ class CorrModel(object):
 
     where ``r`` is a semi-positive float, the distance, and ``Lp`` 
     a model-specific length parameter (it is not the correlation length).
-
+    
     Optionnaly, one could also override `powSpecTh()` which is meant
     to return the theoritical power spectrum.
-
     '''
 
     def __init__(self, grid, Lc):
@@ -55,9 +54,44 @@ class CorrModel(object):
     def _func(self, r, Lp):
         raise NotImplementedError()
         
+    @property
+    def matrix(self):
+        g = self.grid
+        C = np.eye(g.J)
+        for i in xrange(g.J):
+            for j in xrange(i):
+                d = np.abs(g.x[i]-g.x[j])
+                if d > g.L/2.: d = g.L - d
+                C[i,j] = self._func(d, self.Lp)
+                C[j,i] = C[i,j]
+        return C
+        
+        
 
 class Uncorrelated(CorrModel):
-    ''' Uncorrelated model '''
+    ''' Uncorrelated model 
+    
+    :Attributes:
+        grid : `Grid`
+            space domain descriptor
+        Lc : float
+            correlation length (define as the distance where
+            the correlation is less or equal to e**-0.5)
+        Lp : float
+            correlation model specific length parameter
+        eFold : float
+            ratio Lc/Lp
+        matrix : np.ndarray
+            correlation matrix
+
+    :Methods:
+        powSpecNum : None
+            return power spectrum computed using ``Grid.transform``
+        powSpecTh : None
+            return analytical power spectrum derived using the infinite
+            domain approximation
+    
+    '''
     def __init__(self, grid, **kw):
         self.grid = grid
         self.Lp = 0.
@@ -74,7 +108,29 @@ class Uncorrelated(CorrModel):
         return np.ones(self.grid.halfK.shape)/self.grid.J
 
 class Foar(CorrModel):
-    ''' First order autoregressive correlation model '''
+    ''' First order autoregressive correlation model 
+
+    :Attributes:
+        grid : `Grid`
+            space domain descriptor
+        Lc : float
+            correlation length (define as the distance where
+            the correlation is less or equal to e**-0.5)
+        Lp : float
+            correlation model specific length parameter
+        eFold : float
+            ratio Lc/Lp
+        matrix : np.ndarray
+            correlation matrix
+
+    :Methods:
+        powSpecNum : None
+            return power spectrum computed using ``Grid.transform``
+        powSpecTh : None
+            return analytical power spectrum derived using the infinite
+            domain approximation
+
+    '''
     def _func(self, x, Lp):
         x = np.abs(x)/Lp
         return np.exp(-x)
@@ -86,7 +142,28 @@ class Foar(CorrModel):
         return sp
 
 class Soar(CorrModel):
-    ''' Second order autoregressive correlation model '''
+    ''' Second order autoregressive correlation model 
+    
+    :Attributes:
+        grid : `Grid`
+            space domain descriptor
+        Lc : float
+            correlation length (define as the distance where
+            the correlation is less or equal to e**-0.5)
+        Lp : float
+            correlation model specific length parameter
+        eFold : float
+            ratio Lc/Lp
+        matrix : np.ndarray
+            correlation matrix
+
+    :Methods:
+        powSpecNum : None
+            return power spectrum computed using ``Grid.transform``
+        powSpecTh : None
+            return analytical power spectrum derived using the infinite
+            domain approximation
+    '''
     def _func(self, x, Lp):
         x = np.abs(x)/Lp
         return (1.+ x)*np.exp(-x)
@@ -98,7 +175,28 @@ class Soar(CorrModel):
         return sp
 
 class Gaussian(CorrModel):
-    ''' Gaussian correlation model '''
+    ''' Gaussian correlation model
+    
+    :Attributes:
+        grid : `Grid`
+            space domain descriptor
+        Lc : float
+            correlation length (define as the distance where
+            the correlation is less or equal to e**-0.5)
+        Lp : float
+            correlation model specific length parameter
+        eFold : float
+            ratio Lc/Lp
+        matrix : np.ndarray
+            correlation matrix
+
+    :Methods:
+        powSpecNum : None
+            return power spectrum computed using ``Grid.transform``
+        powSpecTh : None
+            return analytical power spectrum derived using the infinite
+            domain approximation
+    '''
     def _func(self, x, Lp):
         return np.exp(-x**2/(2.*Lp**2))
         

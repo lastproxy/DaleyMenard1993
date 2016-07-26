@@ -14,6 +14,8 @@ class Grid(object):
             wavenumber space
         x : numpy.ndarray(float)
             grid space
+        dx : float
+            grid space increment
         F : numpy.ndarray(float)
             Fourier transform matrix (unitary)
 
@@ -39,6 +41,7 @@ class Grid(object):
         self.x = np.array(  [   self.L*k/(2.*self.N +1.) 
                                 for k in self.k
                                 ])
+        self.dx = self.x[1]-self.x[0]
         
         self.F = self._fourierMatrix()
 
