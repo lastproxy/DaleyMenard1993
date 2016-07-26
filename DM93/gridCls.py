@@ -81,7 +81,7 @@ class Grid(object):
         '''
         return np.dot(self.F.T, sp)
 
-    def ticks(self, nTicks=3, format='%.1e', units=1.):
+    def ticks(self, nTicks=3, format='%.0f', units=1.):
         ''' Return a tuple of ``xticklabels``, ``xticks`` and corresponding 
         indexes for axe formatting.
 
@@ -101,7 +101,7 @@ class Grid(object):
             indexes.append(idx)
             ticks.append(self.x[idx])
             if self.x[idx] == 0:
-                ticklabels.append('%.1e'%(self.x[idx]/units))
+                ticklabels.append(format%(self.x[idx]/units))
             else:
-                ticklabels.append('%.1e'%(self.x[idx]/units))
+                ticklabels.append(format%(self.x[idx]/units))
         return (ticklabels, ticks, indexes)

@@ -2,5 +2,5 @@
 
 from gridCls import Grid
 from DM93Lib import *
-from corrModelLib import *
+from corrModelLib import Uncorrelated,  Foar, Soar, Gaussian
 

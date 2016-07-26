@@ -2,26 +2,42 @@
 import numpy as np
 
 class CorrModel(object):
-    ''' Correlation model template class 
-    <!> Not to be instantiated: for derivation purpose only <!>
+    ''' 
 
-    Derived class need to provide at least `_func()` method with 
-    prototype::
+    :Attributes:
+        grid : `Grid`
+            space domain descriptor
+        Lc : float
+            correlation length (define as the distance where
+            the correlation is less or equal to e**-0.5)
+        Lp : float
+            correlation model specific length parameter
+        eFold : float
+            ratio Lc/Lp
+        matrix : np.ndarray
+            correlation matrix
 
-        def _func(self, r, Lp)
-
-    where ``r`` is a semi-positive float, the distance, and ``Lp`` 
-    a model-specific length parameter (it is not the correlation length).
-    
-    Optionnaly, one could also override `powSpecTh()` which is meant
-    to return the theoritical power spectrum.
+    :Methods:
+        powSpecNum : None
+            return power spectrum computed using ``Grid.transform``
+        powSpecTh : None
+            return analytical power spectrum derived using the infinite
+            domain approximation
+        random : None|float, None|float
+            generate a random realisation from the covariance model
     '''
+
+    #--------------------------------------------
+    # <!> Template class : do not instantiate
+    #   use for derivation only
+    #--------------------------------------------
 
     def __init__(self, grid, Lc):
         self.grid = grid
         self.Lc = Lc
         self.eFold = self._findEFold()
         self.Lp = self.Lc/self.eFold
+        self.matrix = self._buildMatrix()
 
     def corrFunc(self):
         f = np.vectorize(self._func)
@@ -52,10 +68,9 @@ class CorrModel(object):
         return eFold
 
     def _func(self, r, Lp):
-        raise NotImplementedError()
+        raise NotImplementedError('Template class: not to be instantiated')
         
-    @property
-    def matrix(self):
+    def _buildMatrix(self):
         g = self.grid
         C = np.eye(g.J)
         for i in xrange(g.J):
@@ -65,38 +80,32 @@ class CorrModel(object):
                 C[i,j] = self._func(d, self.Lp)
                 C[j,i] = C[i,j]
         return C
+
+    def random(self, variance=1., mean=0.):
+        ''' Generate a random realisation from the covariance model
+        
+        :Parameters:
+            variance : float
+                uniform variance
+            mean : float
+                uniform mean (bias)
+        '''
+        B = self.matrix * variance
+        bias = mean * np.ones(self.grid.J)
+        return np.random.multivariate_normal(bias, B)
         
         
 
 class Uncorrelated(CorrModel):
-    ''' Uncorrelated model 
-    
-    :Attributes:
-        grid : `Grid`
-            space domain descriptor
-        Lc : float
-            correlation length (define as the distance where
-            the correlation is less or equal to e**-0.5)
-        Lp : float
-            correlation model specific length parameter
-        eFold : float
-            ratio Lc/Lp
-        matrix : np.ndarray
-            correlation matrix
+    ''' Uncorrelated model ''' 
+    __doc__ += CorrModel.__doc__
 
-    :Methods:
-        powSpecNum : None
-            return power spectrum computed using ``Grid.transform``
-        powSpecTh : None
-            return analytical power spectrum derived using the infinite
-            domain approximation
-    
-    '''
     def __init__(self, grid, **kw):
         self.grid = grid
         self.Lp = 0.
         self.eFold = 0.
         self.Lc = 0.
+        self.matrix = np.eye(self.grid.J)
 
     def _func(self, x, Lp):
         if x == 0:
@@ -108,29 +117,9 @@ class Uncorrelated(CorrModel):
         return np.ones(self.grid.halfK.shape)/self.grid.J
 
 class Foar(CorrModel):
-    ''' First order autoregressive correlation model 
+    ''' First order autoregressive correlation model '''
+    __doc__ += CorrModel.__doc__
 
-    :Attributes:
-        grid : `Grid`
-            space domain descriptor
-        Lc : float
-            correlation length (define as the distance where
-            the correlation is less or equal to e**-0.5)
-        Lp : float
-            correlation model specific length parameter
-        eFold : float
-            ratio Lc/Lp
-        matrix : np.ndarray
-            correlation matrix
-
-    :Methods:
-        powSpecNum : None
-            return power spectrum computed using ``Grid.transform``
-        powSpecTh : None
-            return analytical power spectrum derived using the infinite
-            domain approximation
-
-    '''
     def _func(self, x, Lp):
         x = np.abs(x)/Lp
         return np.exp(-x)
@@ -142,28 +131,9 @@ class Foar(CorrModel):
         return sp
 
 class Soar(CorrModel):
-    ''' Second order autoregressive correlation model 
-    
-    :Attributes:
-        grid : `Grid`
-            space domain descriptor
-        Lc : float
-            correlation length (define as the distance where
-            the correlation is less or equal to e**-0.5)
-        Lp : float
-            correlation model specific length parameter
-        eFold : float
-            ratio Lc/Lp
-        matrix : np.ndarray
-            correlation matrix
+    ''' Second order autoregressive correlation model '''
+    __doc__ += CorrModel.__doc__
 
-    :Methods:
-        powSpecNum : None
-            return power spectrum computed using ``Grid.transform``
-        powSpecTh : None
-            return analytical power spectrum derived using the infinite
-            domain approximation
-    '''
     def _func(self, x, Lp):
         x = np.abs(x)/Lp
         return (1.+ x)*np.exp(-x)
@@ -175,28 +145,9 @@ class Soar(CorrModel):
         return sp
 
 class Gaussian(CorrModel):
-    ''' Gaussian correlation model
-    
-    :Attributes:
-        grid : `Grid`
-            space domain descriptor
-        Lc : float
-            correlation length (define as the distance where
-            the correlation is less or equal to e**-0.5)
-        Lp : float
-            correlation model specific length parameter
-        eFold : float
-            ratio Lc/Lp
-        matrix : np.ndarray
-            correlation matrix
+    ''' Gaussian correlation model '''
+    __doc__ += CorrModel.__doc__
 
-    :Methods:
-        powSpecNum : None
-            return power spectrum computed using ``Grid.transform``
-        powSpecTh : None
-            return analytical power spectrum derived using the infinite
-            domain approximation
-    '''
     def _func(self, x, Lp):
         return np.exp(-x**2/(2.*Lp**2))
         
