@@ -1,20 +1,13 @@
 import numpy as np 
 import matplotlib.pyplot as plt
-from DM93 import Grid, Uncorrelated, Foar, Soar, Gaussian
+from DM93 import Uncorrelated, Foar, Soar, Gaussian
 
 #====================================================================
 #===| setup and configuration |======================================
 
-# -- units of space: m 
-km = 1000.
+execfile('config.py')
 
-# -- discretization
-a = 2500.*km
-L = 2.*np.pi * a
-N = 100
-grid = Grid(N, L)
-
-Lc = a/4.
+Lc = grid.L/20.
 
 
 corrModels = {  'uncorrelated' : Uncorrelated(grid),
@@ -23,11 +16,13 @@ corrModels = {  'uncorrelated' : Uncorrelated(grid),
                 'gaussian' : Gaussian(grid, Lc),
                 }
 
+
 # -- generating random realizations of correlated signal
 
 realizations = dict()
 realPowSpec = dict()
-for label, cm in corrModels.iteritems():
+for label in ('foar', 'soar', 'gaussian'):
+    cm = corrModels[label]
     realizations[label] = cm.random()
     powSpec = grid.transform(realizations[label])[grid.N:]**2
     # normalization 
@@ -37,6 +32,11 @@ for label, cm in corrModels.iteritems():
 #====================================================================
 #===| plots |========================================================
 
+colors =    {  'uncorrelated' : 'k',
+                'foar' : 'b',
+                'soar' : 'g',
+                'gaussian' : 'r',
+                }
 # -- correlation models and spectra
 
 fig1 = plt.figure(figsize=(8,8))
@@ -45,10 +45,10 @@ for label, cm in corrModels.iteritems():
     axGrid = plt.subplot(311)
     axSpTh = plt.subplot(312)
     axSpNu = plt.subplot(313)
-    axGrid.plot(grid.x, cm.corrFunc(), label=label)
-    axSpTh.plot(grid.halfK, cm.powSpecTh(), label=label)
+    axGrid.plot(grid.x, cm.corrFunc(), label=label, color=colors[label])
+    axSpTh.plot(grid.halfK, cm.powSpecTh(), label=label, color=colors[label])
 
-    axSpNu.plot(grid.halfK, cm.powSpecNum(), label=label)
+    axSpNu.plot(grid.halfK, cm.powSpecNum(), label=label, color=colors[label])
 
 axGrid.set_title('Correlation $L_c=%.0f$ km'%(Lc/km))
 
@@ -69,9 +69,9 @@ axSpNu.legend(loc='best')
 fig2 = plt.figure()
 axGd = plt.subplot(211)
 axSp = plt.subplot(212) 
-for label in corrModels.iterkeys():
-    axGd.plot(grid.x, realizations[label], label=label)
-    axSp.plot(grid.halfK, realPowSpec[label], label=label) 
+for label in realizations.iterkeys():
+    axGd.plot(grid.x, realizations[label], label=label, color=colors[label])
+    axSp.plot(grid.halfK, realPowSpec[label], label=label, color=colors[label]) 
     
 axGd.set_title('Correlated signal realization')
 axGd.set_xlabel('$x$ [km]')

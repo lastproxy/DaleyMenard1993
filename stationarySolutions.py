@@ -1,31 +1,18 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 
-from DM93 import Grid, Uncorrelated, Foar, Soar, Gaussian
+from DM93 import Uncorrelated, Foar, Soar, Gaussian
 from DM93 import spVarStationary, fcstSpVarPropagator,  varItGenerator
 
 #====================================================================
 #===| setup and configuration |======================================
 
-# -- units of space: m and time: s
-km = 1000.
-h = 3600.
-
-# -- discretization
-a = 2500.*km
-L = 2.*np.pi * a
-N = 24
-grid = Grid(N, L)
-dt =6.*h
-
-# -- viscosity
-nuFactor = 0.
-nu =  nuFactor/dt*a**2
+execfile('config.py')
 
 # -- Correlations
 corrObs = Uncorrelated(grid)
 
-Lc = a/6.
+Lc = grid.L/20.
 corrMod = Soar(grid, Lc)
 
 # -- wavenumber and initial forecast variance

@@ -1,22 +1,13 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 
-from DM93 import Grid, Uncorrelated, Foar, Soar, Gaussian
+from DM93 import Uncorrelated, Foar, Soar, Gaussian
 from DM93 import spVarStationary, analSpVar, convRateAssymp
 
 #====================================================================
 #===| setup and configuration |======================================
 
-# -- units of space: m and time: s
-km = 1000.
-h = 3600.
-
-# -- discretization
-a = 2500.*km
-L = 2.*np.pi * a
-N = 24
-grid = Grid(N, L)
-dt =6.*h
+execfile('config.py')
 
 # -- viscosity
 nuFactors  = [0, .001, 0.01, 0.05]
@@ -24,7 +15,7 @@ nuFactors  = [0, .001, 0.01, 0.05]
 # -- Correlations
 corrObs = Uncorrelated(grid)
 
-Lc = a/6.
+Lc = grid.L/20.
 corrMod = Soar(grid, Lc)
 
 #====================================================================

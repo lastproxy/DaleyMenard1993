@@ -2,44 +2,33 @@ import numpy as np
 from numpy import pi
 import matplotlib.pyplot as plt
 
-from DM93 import Grid
 from DM93 import modelSpPropagator
 
 #====================================================================
 #===| setup and configuration |======================================
 
-# -- units of space: m and time: s
-km = 1000.
-h = 3600.
-
-# -- discretization
-a = 2500.*km
-L = 2.*np.pi * a
-N = 24
-grid = Grid(N, L)
-dt =1.*h
-
-# -- zonal wind
-U = 20.*km/h
-
-# -- viscosity
-nuFactor = 0.
-nu =  nuFactor/dt*a**2
+execfile('config.py')
 
 # -- initial state
-ic = np.sin(2.*pi*grid.x/grid.L)
+#ic = np.sin(2.*pi*grid.x/grid.L)
+ic = np.exp(-grid.x**2/(L/6.)**2)
 
-# -- integration 
-MSpec = modelSpPropagator(grid, U, dt=dt, nu=nu)
-M = (grid.F.dot(MSpec)).dot(grid.F.T)
-
+# -- integration
 nDt = 200
-times = np.array([i*dt for i in xrange(nDt+1)])
 
 #====================================================================
 #===| computations |=================================================
+
+# -- spectral (Ms) and grid (M) propagators (M = F.Ms.F')
+Ms = modelSpPropagator(grid, U, dt=dt, nu=nu)
+M = (grid.F.dot(Ms)).dot(grid.F.T)
+
+# -- integration
+times = np.array([i*dt for i in xrange(nDt+1)])
+
 traj = np.empty(shape=(nDt+1, grid.J))
 x = ic
+# -- x_{n+1} = M.x_{n} 
 for i in xrange(nDt+1):
     traj[i] = x
     x = M.dot(x)
