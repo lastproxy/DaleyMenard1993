@@ -59,17 +59,8 @@ axe.set_yticklabels(times/h)
 axe.set_xlabel(r'$x$ [km]')
 axe.xaxis.set_ticks_position('bottom')
 
-nXTicks = 3
-xticks = list()
-xticklabels = list()
-for i in xrange(nXTicks):
-    gp = grid.J/(nXTicks-1)*i
-    xticks.append(gp)
-    if grid.x[gp] == 0:
-        xticklabels.append('%.1e'%(grid.x[gp]/km))
-    else:
-        xticklabels.append('%.1e'%(grid.x[gp]/km))
-axe.set_xticks(xticks)
+xticklabels, xticks, indexes = grid.ticks(3, units=km)
+axe.set_xticks(indexes)
 axe.set_xticklabels(xticklabels)
 
 plt.colorbar(im)

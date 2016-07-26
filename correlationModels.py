@@ -39,8 +39,11 @@ for label, cm in corrModels.iteritems():
     axSpNu.plot(grid.halfK, cm.powSpecNum(), label=label)
 
 axGrid.set_title('Correlation $L_c=%.1e$ m'%Lc)
-axGrid.set_xticks(np.floor([-grid.L/4., 0., grid.L/4.]))
-axGrid.set_xlabel('distance [m]')
+
+xticklabels, xticks = grid.ticks(3, units=km)[:2]
+axGrid.set_xticks(xticks)
+axGrid.set_xticklabels(xticklabels)
+axGrid.set_xlabel('distance [km]')
 
 axSpTh.set_title('Normalized theoretical power spectrum')
 axSpTh.set_xlabel('wavenumber $k$')

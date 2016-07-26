@@ -22,6 +22,8 @@ class Grid(object):
             return direct Fourier transform of signal
         inverse : numpy.ndarray(shape=self.J)
             return inverse Fourier transform of spectra
+        ticks : int, format
+            return a tuple (xticks, xticklabels) for axe formating
             
     '''
     
@@ -75,3 +77,28 @@ class Grid(object):
                 spectrum
         '''
         return np.dot(self.F.T, sp)
+
+    def ticks(self, nTicks=3, format='%.1e', units=1.):
+        ''' Return a tuple of ``xticklabels``, ``xticks`` and corresponding 
+        indexes for axe formatting.
+
+        :Parameters:
+            nTicks : int
+                number of ticks
+            format : str
+                number format string
+            units : d=float
+                units divider
+        '''
+        indexes = list()
+        ticks = list()
+        ticklabels = list()
+        for i in xrange(nTicks):
+            idx = self.J/(nTicks-1)*i
+            indexes.append(idx)
+            ticks.append(self.x[idx])
+            if self.x[idx] == 0:
+                ticklabels.append('%.1e'%(self.x[idx]/units))
+            else:
+                ticklabels.append('%.1e'%(self.x[idx]/units))
+        return (ticklabels, ticks, indexes)
