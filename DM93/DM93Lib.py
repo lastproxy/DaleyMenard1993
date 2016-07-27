@@ -193,6 +193,8 @@ def convRate(grid, f2n, r2, q2, k=None, dt=1., nu=0):
     ''' Convergence rate
     
     :Parameters:
+        grid : `Grid`
+            Periodic 1D grid
         f2n : float | np.ndarray
             Initial forecast variance.
             If float provided, `q2` must be `float` as well, 
@@ -219,6 +221,8 @@ def convRateAssymp(grid, r2, q2, k=None, dt=1., nu=0):
     ''' Assymptotic convergence rate
     
     :Parameters:
+        grid : `Grid`
+            Periodic 1D grid
         f2n : float | np.ndarray
             Initial forecast variance.
             If float provided, `q2` must be `float` as well, 
@@ -242,3 +246,17 @@ def convRateAssymp(grid, r2, q2, k=None, dt=1., nu=0):
     beta = alpha**2 - m2*r2**2
     return (alpha - np.sqrt(beta))/(alpha + np.sqrt(beta))
 
+def specCorrLength(grid, powSpec):
+    ''' Compute correlation length from the power spectra
+
+    :Parameters:
+        grid : `Grid`
+            Periodic 1D grid
+        powSpec : np.ndarray
+            Power spectrum of the correlation 
+            (as returned by `CorrModel.powSpecTh()`)
+    '''
+    return np.sqrt( grid.L**2/(4*np.pi**2)
+                    * (powSpec[0]/np.sqrt(2) + sum(powSpec[1:]))
+                    / sum(grid.halfK[1:]**2*powSpec[1:])
+                    )

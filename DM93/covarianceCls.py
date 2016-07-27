@@ -81,7 +81,7 @@ class CorrModel(Covariance):
             correlation matrix
 
     :Methods:
-        powSpecTh : None
+        powSpecTh : None|bool
             return analytical power spectrum derived using the infinite
             domain approximation
         random : None|float, None|float
@@ -105,8 +105,17 @@ class CorrModel(Covariance):
         f = np.vectorize(self._func)
         return f(self.grid.x, self.Lp)
 
-    def powSpecTh(self): 
-        raise NotImplementedError()
+    def powSpecTh(self, normalize=True):
+        ''' Power spectrum
+
+        :Parameter:
+            normalize : bool
+                if True, normalize the spectrum (default)
+        '''
+        sp = self._powerSpectrum()
+        if normalize:
+            sp /= (sp[0]+ 2.*sum(sp[1:]))
+        return sp
 
     def _findEFold(self, maxR=3., res=1000):
         f0 = self._func(0, 1.)
@@ -154,8 +163,8 @@ class Uncorrelated(CorrModel):
         else:
             return 0.
 
-    def powSpecTh(self):
-        return np.ones(self.grid.halfK.shape)/self.grid.J
+    def _powerSpectrum(self):
+        return np.ones(self.grid.halfK.shape)
 
 class Foar(CorrModel):
     ''' First order autoregressive correlation model '''
@@ -166,10 +175,9 @@ class Foar(CorrModel):
         x = np.abs(x)/Lp
         return np.exp(-x)
         
-    def powSpecTh(self):
+    def _powerSpectrum(self):
         q = 2.*np.pi*self.grid.halfK/self.grid.L
         sp = (1. + q**2*self.Lp**2)**-1
-        sp /= (sp[0]+ 2.*sum(sp[1:]))
         return sp
 
 class Soar(CorrModel):
@@ -181,10 +189,9 @@ class Soar(CorrModel):
         x = np.abs(x)/Lp
         return (1.+ x)*np.exp(-x)
         
-    def powSpecTh(self):
+    def _powerSpectrum(self):
         q = 2.*np.pi*self.grid.halfK/self.grid.L
         sp = (1. + q**2*self.Lp**2)**-2
-        sp /= (sp[0]+ 2.*sum(sp[1:]))
         return sp
 
 class Gaussian(CorrModel):
@@ -195,8 +202,7 @@ class Gaussian(CorrModel):
     def _func(self, x, Lp):
         return np.exp(-x**2/(2.*Lp**2))
         
-    def powSpecTh(self):
+    def _powerSpectrum(self):
         q = 2.*np.pi*self.grid.halfK/self.grid.L
         sp = np.exp(-q**2*self.Lp**2/2)
-        sp /= (sp[0]+ 2.*sum(sp[1:]))
         return sp
