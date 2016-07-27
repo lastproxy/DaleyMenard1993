@@ -132,3 +132,5 @@ varAx.set_yscale('log')
 varAx.set_xlabel(r'$t$ [hours]')
 varAx.set_xticks(times[::nDt/nTimeTicks]/h)
 varAx.set_title('Forecast variance')
+
+plt.show()
