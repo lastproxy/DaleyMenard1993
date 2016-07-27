@@ -22,7 +22,7 @@ import numpy as np
 from gridCls import Grid
 
 
-def analSpVar(f2n, r2, q2):
+def analSpVar(f2n, r2):
     ''' Analysis spectral variance 
     
     :Parameters:
@@ -32,8 +32,6 @@ def analSpVar(f2n, r2, q2):
             the corresponding wavenumber power spectrum component.
         r2 : float | np.ndarray
             Observation error correlation power spectra or component
-        q2 : float | np.ndarray
-            Model error correlation power spectra or component
     '''
     return (r2*f2n)/(r2+f2n)
 
