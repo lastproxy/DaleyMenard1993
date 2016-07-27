@@ -25,5 +25,5 @@
 from gridCls import Grid
 from spectralModelCls import AdvectionDiffusionModel
 from DM93Lib import *
-from corrModelLib import Covariance, Uncorrelated,  Foar, Soar, Gaussian
+from covarianceCls import Covariance, Uncorrelated,  Foar, Soar, Gaussian
 

@@ -60,6 +60,8 @@ class CorrModel(Covariance):
     ''' 
 
     :Attributes:
+        name : str
+            correlation model name
         grid : `Grid`
             space domain descriptor
         Lc : float
@@ -85,6 +87,7 @@ class CorrModel(Covariance):
     #   use for derivation only
     #--------------------------------------------
 
+    name = None
     def __init__(self, grid, Lc):
         self.grid = grid
         self.Lc = Lc
@@ -130,6 +133,7 @@ class CorrModel(Covariance):
 class Uncorrelated(CorrModel):
     ''' Uncorrelated model ''' 
     __doc__ += CorrModel.__doc__
+    name = 'uncorrelated'
 
     def __init__(self, grid, *args):
         self.grid = grid
@@ -150,6 +154,7 @@ class Uncorrelated(CorrModel):
 class Foar(CorrModel):
     ''' First order autoregressive correlation model '''
     __doc__ += CorrModel.__doc__
+    name = 'foar'
 
     def _func(self, x, Lp):
         x = np.abs(x)/Lp
@@ -164,6 +169,7 @@ class Foar(CorrModel):
 class Soar(CorrModel):
     ''' Second order autoregressive correlation model '''
     __doc__ += CorrModel.__doc__
+    name = 'soar'
 
     def _func(self, x, Lp):
         x = np.abs(x)/Lp
@@ -178,6 +184,7 @@ class Soar(CorrModel):
 class Gaussian(CorrModel):
     ''' Gaussian correlation model '''
     __doc__ += CorrModel.__doc__
+    name = 'gaussian'
 
     def _func(self, x, Lp):
         return np.exp(-x**2/(2.*Lp**2))
