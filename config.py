@@ -13,7 +13,7 @@ grid = Grid(N, L)
 dt =1.*h
 
 # -- zonal wind
-U = 20.*km/h
+U = 100.*km/h
 
 # -- viscosity
 nuFactor = 0.

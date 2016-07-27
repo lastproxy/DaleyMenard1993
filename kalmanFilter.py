@@ -11,8 +11,7 @@ from DM93 import Covariance, Uncorrelated, Foar, Soar, Gaussian
 
 execfile('config.py')
 
-doAssimilate = False
-#doAssimilate = True
+doAssimilate = True
 
 # -- observation errors (R)
 obsLc = None
@@ -30,7 +29,7 @@ fctErrVar = 2.
 modLc = grid.L/50.
 modCorr = Gaussian(grid, modLc)
 modErrBias = 0.
-modErrVar = 0.5
+modErrVar = 0.01
 
 # -- initial truth state
 ampl = 10.
@@ -51,6 +50,8 @@ truTraj = np.empty(shape=(nDt+1, grid.J))
 obsTraj = np.empty(shape=(nDt+1, grid.J))
 anlTraj = np.empty(shape=(nDt+1, grid.J))
 fctTraj = np.empty(shape=(nDt+1, grid.J))
+fctVarTraj = np.empty(nDt+1)
+
 
 # -- initial covariances
 B = Covariance(grid, fctCorr.matrix * fctErrVar)
@@ -79,21 +80,22 @@ for i in xrange(nDt+1):
         xa = xb + K.dot(y-xb)
         
         # -- Kalman Filter
-        B = Covariance(grid, (M.dot(B.matrix)).dot(M.T) + Q.matrix )
+        B = Covariance(grid, (M.dot(A.matrix)).dot(M.T) + Q.matrix )
         A = Covariance(grid, (np.eye(grid.J) - K).dot(B.matrix)  )
 
     else:
         xa = xb
 
     # -- propagating
-    xb = M.dot(xa) + Q.random()
-    xt = M.dot(xt) 
+    xb = M.dot(xa) 
+    xt = M.dot(xt) + Q.random() 
     
     # -- recording states
     truTraj[i] = xt
     obsTraj[i] = y
     anlTraj[i] = xa
     fctTraj[i] = xb
+    fctVarTraj[i] = B.matrix.diagonal()[0]
      
 
 
