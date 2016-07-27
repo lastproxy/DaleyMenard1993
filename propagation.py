@@ -1,3 +1,4 @@
+from sys import stdout
 import numpy as np 
 from numpy import pi
 import matplotlib.pyplot as plt
@@ -24,14 +25,18 @@ Ms = modelSpPropagator(grid, U, dt=dt, nu=nu)
 M = (grid.F.dot(Ms)).dot(grid.F.T)
 
 # -- integration
-times = np.array([i*dt for i in xrange(nDt+1)])
+nTimeTicks = 5
+dtTicks = nDt/nTimeTicks
+times = np.array([i*dt for i in xrange(0,nDt+1,dtTicks)])
 
 traj = np.empty(shape=(nDt+1, grid.J))
 x = ic
 # -- x_{n+1} = M.x_{n} 
 for i in xrange(nDt+1):
-    traj[i] = x
+    stdout.write('..%d'%i)
+    stdout.flush()
     x = M.dot(x)
+    traj[i] = x
 
 #====================================================================
 #===| plots |========================================================
@@ -43,7 +48,8 @@ im = axe.matshow(traj, origin='lower')
 axe.set_aspect('auto')
 
 axe.set_ylabel(r'$t$ [hours]')
-axe.set_yticklabels(times/h)
+#axe.set_yticklabels(times/h)
+axe.set_yticks(times/h)
 
 axe.set_xlabel(r'$x$ [km]')
 axe.xaxis.set_ticks_position('bottom')

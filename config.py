@@ -4,6 +4,7 @@ from DM93 import Grid
 # -- units of space: m and time: s
 km = 1000.
 h = 3600.
+day = 24.*h
 
 # -- discretization
 L = 16000 * km
