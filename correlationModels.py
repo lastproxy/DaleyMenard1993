@@ -53,7 +53,7 @@ axReal.set_xlabel('$x$ [km]')
 axReal.set_xticks(xticks)
 axReal.set_xticklabels(xticklabels)
 
-axReal.legend(loc='best')
+axSpTh.legend(loc='best')
 
 
 plt.show()

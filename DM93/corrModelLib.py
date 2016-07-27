@@ -22,7 +22,41 @@
 ''' Correlation models library '''
 import numpy as np
 
-class CorrModel(object):
+class Covariance(object):
+    ''' Covariance
+    
+    :Attributes:
+        grid : `Grid`
+            space domain descriptor
+        matrix : np.ndarray
+            symetric matrix
+
+    :Methods:
+        random : None|float, None|float
+            generate a random realisation from the covariance model
+    '''
+
+    def __init__(self, grid, matrix):
+        self.grid = grid
+
+        # -- assert matrix is symetric
+        for i in xrange(self.grid.J):
+            for j in xrange(i):
+                np.testing.assert_almost_equal(matrix[i,j], matrix[j,i])
+        self.matrix = matrix
+
+    def random(self, bias=0.):
+        ''' Generate a random realisation from the covariance model
+        
+        :Parameters:
+            bias : float
+                uniform bias (mean)
+        '''
+        mean = bias * np.ones(self.grid.J)
+        return np.random.multivariate_normal(mean, self.matrix)
+        
+
+class CorrModel(Covariance):
     ''' 
 
     :Attributes:
@@ -65,15 +99,6 @@ class CorrModel(object):
     def powSpecTh(self): 
         raise NotImplementedError()
 
-    #def powSpecNum(self): 
-    #    tf = self.grid.transform(self.corrFunc())
-    #    # -- keep semi-positive wavenumbers only
-    #    tf = tf[self.grid.N:]
-    #    sp = tf ** 2
-    #    # -- normalize power spectrum
-    #    sp /= (sp[0]+ 2.*sum(sp[1:]))
-    #    return sp
-
     def _findEFold(self, maxR=3., res=1000):
         f0 = self._func(0, 1.)
         eFold = None
@@ -100,19 +125,6 @@ class CorrModel(object):
                 C[j,i] = C[i,j]
         return C
 
-    def random(self, variance=1., mean=0.):
-        ''' Generate a random realisation from the covariance model
-        
-        :Parameters:
-            variance : float
-                uniform variance
-            mean : float
-                uniform mean (bias)
-        '''
-        B = self.matrix * variance
-        bias = mean * np.ones(self.grid.J)
-        return np.random.multivariate_normal(bias, B)
-        
         
 
 class Uncorrelated(CorrModel):

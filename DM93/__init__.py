@@ -24,5 +24,5 @@
 
 from gridCls import Grid
 from DM93Lib import *
-from corrModelLib import Uncorrelated,  Foar, Soar, Gaussian
+from corrModelLib import Covariance, Uncorrelated,  Foar, Soar, Gaussian
 
