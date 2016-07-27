@@ -3,7 +3,7 @@ import numpy as np
 from numpy import pi
 import matplotlib.pyplot as plt
 
-from DM93 import modelSpPropagator
+from DM93 import AdvectionDiffusionModel
 
 #====================================================================
 #===| setup and configuration |======================================
@@ -21,8 +21,7 @@ nDt = 200
 #===| computations |=================================================
 
 # -- spectral (Ms) and grid (M) propagators (M = F.Ms.F')
-Ms = modelSpPropagator(grid, U, dt=dt, nu=nu)
-M = (grid.F.dot(Ms)).dot(grid.F.T)
+model = AdvectionDiffusionModel(grid, U, dt=dt, nu=nu)
 
 # -- integration
 nTimeTicks = 5
@@ -35,7 +34,7 @@ x = ic
 for i in xrange(nDt+1):
     stdout.write('..%d'%i)
     stdout.flush()
-    x = M.dot(x)
+    x = model(x)
     traj[i] = x
 
 #====================================================================

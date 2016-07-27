@@ -74,7 +74,7 @@ class AdvectionDiffusionModel(SpectralModel):
         x1 = modelInstance(x0)
     '''
     
-    def __init__(grid, U, dt=1., nu=0):
+    def __init__(self, grid, U, dt=1., nu=0):
         '''
         :Parameters:
             grid : `Grid`
@@ -91,11 +91,11 @@ class AdvectionDiffusionModel(SpectralModel):
         super(AdvectionDiffusionModel, self).__init__(grid, dt)
 
     def _buildSpPropagator(self):
-        S = np.zeros(shape=(grid.J, grid.J))
+        S = np.zeros(shape=(self.grid.J, self.grid.J))
         S[0,0] = 1.
-        for j in xrange(1,grid.N+1):
-            phi = 2.*np.pi*j*U*dt/grid.L
-            ampl = np.exp(-4.*np.pi**2*nu*dt*j**2/grid.L**2)
+        for j in xrange(1,self.grid.N+1):
+            phi = 2.*np.pi*j*self.U*self.dt/self.grid.L
+            ampl = np.exp(-4.*np.pi**2*self.nu*self.dt*j**2/self.grid.L**2)
             S[2*j-1, 2*j-1] = ampl * np.cos(phi)
             S[2*j, 2*j-1]   = ampl * np.sin(phi)
             S[2*j-1, 2*j]   = -ampl * np.sin(phi)
