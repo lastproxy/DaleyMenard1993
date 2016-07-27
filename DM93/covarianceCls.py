@@ -30,6 +30,8 @@ class Covariance(object):
             space domain descriptor
         matrix : np.ndarray
             symetric matrix
+        variance : np.ndarray
+            diagonal of covariance matrix
 
     :Methods:
         random : None|float, None|float
@@ -54,6 +56,10 @@ class Covariance(object):
         '''
         mean = bias * np.ones(self.grid.J)
         return np.random.multivariate_normal(mean, self.matrix)
+
+    @property
+    def variance(self):
+        return self.matrix.diagonal()
         
 
 class CorrModel(Covariance):
