@@ -23,6 +23,7 @@
 ''' Daley and Menard 1993 Kalman Filter 1D lab '''
 
 from gridCls import Grid
+from spectralModelCls import AdvectionDiffusionModel
 from DM93Lib import *
 from corrModelLib import Covariance, Uncorrelated,  Foar, Soar, Gaussian
 
