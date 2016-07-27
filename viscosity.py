@@ -14,17 +14,17 @@ execfile('config.py')
 nuFactors  = [0, .0001, .001,]
 
 # -- Correlations
-corrObs = Uncorrelated(grid)
+obsCorr = Uncorrelated(grid)
 
-Lc = grid.L/20.
-corrMod = Soar(grid, Lc)
+fctLc = grid.L/20.
+fctCorr = Soar(grid, fctLc)
 
 #====================================================================
 #===| computations |=================================================
 
 # -- correlation power spectra
-r2 = corrObs.powSpecTh()
-q2 = corrMod.powSpecTh()
+r2 = obsCorr.powSpecTh()
+q2 = fctCorr.powSpecTh()
 
 
 f2Plus = dict()

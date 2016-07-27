@@ -11,9 +11,9 @@ from DM93 import Uncorrelated, Foar, Soar, Gaussian
 
 execfile('config.py')
 
-# -- model errors
-modLc = grid.L/20.
-modCorr = Gaussian(grid, modLc)
+# -- forecast errors
+fctLc = grid.L/20.
+fctCorr = Gaussian(grid, fctLc)
 
 # -- ensemble of perturbations
 nList = [3, 10, 30, 100, 500]
@@ -28,10 +28,10 @@ vmax = -np.infty
 for n in nList:
     print('Ensemble of %d perturbations'%n)
     for i in xrange(n):
-        if len(perturbations) < i:
-            stdout.write('..%d'%i)
+        if len(perturbations) <= i:
+            stdout.write('..%d'%(i+1))
             stdout.flush()
-            perturbations.append(modCorr.random())
+            perturbations.append(fctCorr.random())
 
     cubeB = np.empty(shape=(n, grid.J, grid.J))
     for i, p in enumerate(perturbations):
@@ -56,10 +56,10 @@ for i, n in enumerate(nList):
     axe.set_yticks(())
     axe.set_title('$N=%d$'%n)
 axe = plt.subplot((len(nList)+1)/2, 2, len(nList)+1)
-axe.matshow(modCorr.matrix, vmin=0, vmax=1)
+axe.matshow(fctCorr.matrix, vmin=0, vmax=1)
 axe.set_xticks(())
 axe.set_yticks(())
 axe.set_title('Exact correlation matrix')
-fig.suptitle(modCorr.name, fontsize=16)
+fig.suptitle(fctCorr.name, fontsize=16)
 
 plt.show()

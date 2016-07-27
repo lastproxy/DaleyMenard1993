@@ -24,9 +24,7 @@ nDt = 200
 model = AdvectionDiffusionModel(grid, U, dt=dt, nu=nu)
 
 # -- integration
-nTimeTicks = 5
-dtTicks = nDt/nTimeTicks
-times = np.array([i*dt for i in xrange(0,nDt+1,dtTicks)])
+times = np.array([i*dt for i in xrange(nDt+1)])
 
 traj = np.empty(shape=(nDt+1, grid.J))
 x = ic
@@ -39,23 +37,25 @@ for i in xrange(nDt+1):
 
 #====================================================================
 #===| plots |========================================================
+nTimeTicks = 5
 
-fig = plt.figure()
+fig = plt.figure(figsize=(8,5))
 axe = plt.subplot(111)
-im = axe.matshow(traj, origin='lower')
+im = axe.matshow(traj.T, origin='lower')
 
 axe.set_aspect('auto')
 
-axe.set_ylabel(r'$t$ [hours]')
-#axe.set_yticklabels(times/h)
-axe.set_yticks(times/h)
 
-axe.set_xlabel(r'$x$ [km]')
+axe.set_xlabel(r'$t$ [hours]')
+axe.set_xticks(times[::nDt/nTimeTicks]/h)
 axe.xaxis.set_ticks_position('bottom')
 
-xticklabels, xticks, indexes = grid.ticks(units=km)
-axe.set_xticks(indexes)
-axe.set_xticklabels(xticklabels)
+gridTicksLabel, girdTicks, indexes = grid.ticks(units=km)
+axe.set_ylabel(r'$x$ [km]')
+axe.set_yticks(indexes)
+axe.set_yticklabels(gridTicksLabel)
+
+
 
 plt.colorbar(im)
 plt.show()

@@ -16,20 +16,20 @@ doAssimilate = True
 # -- observation errors (R)
 obsLc = None
 obsCorr = Uncorrelated(grid)
-obsErrBias = 0.
-obsErrVar = 0.1
+obsBias = 0.
+obsVar = 0.1
 
 # -- forecast errors (B)
 fctLc = grid.L/20.
 fctCorr = Soar(grid, fctLc)
-fctErrBias = 0.
-fctErrVar = 2.
+fctBias = 0.
+fctVar = 2.
 
 # -- model errors (Q)
 modLc = grid.L/50.
 modCorr = Gaussian(grid, modLc)
-modErrBias = 0.
-modErrVar = 0.01
+modBias = 0.
+modVar = 0.01
 
 # -- initial truth state
 ampl = 10.
@@ -55,13 +55,13 @@ fctVarTraj = np.empty(nDt+1)
 
 
 # -- initial covariances
-B = Covariance(grid, fctCorr.matrix * fctErrVar)
-R = Covariance(grid, obsCorr.matrix * obsErrVar)
-Q = Covariance(grid, modCorr.matrix * modErrVar)
+B = Covariance(grid, fctCorr.matrix * fctVar)
+R = Covariance(grid, obsCorr.matrix * obsVar)
+Q = Covariance(grid, modCorr.matrix * modVar)
 
 # -- integration 
 xt = truIc
-xbIc = xt + B.random()
+xbIc = xt + B.random(bias=fctBias)
 xb=xbIc
 A = B
 for i in xrange(nDt+1):
@@ -69,7 +69,7 @@ for i in xrange(nDt+1):
     stdout.flush()
 
     # -- observations
-    y = xt + R.random()
+    y = xt + R.random(bias=obsBias)
 
     if doAssimilate:
 
@@ -87,7 +87,7 @@ for i in xrange(nDt+1):
 
     # -- propagating
     xb = model(xa) 
-    xt = model(xt) + Q.random() 
+    xt = model(xt) + Q.random(bias=modBias) 
     
     # -- recording states
     truTraj[i] = xt
@@ -101,32 +101,34 @@ for i in xrange(nDt+1):
 #====================================================================
 #===| plots |========================================================
 nTimeTicks = 5
-tTicks = np.array([t for t in times[::nDt/nTimeTicks]/h])
 
-fig = plt.figure(figsize=(10,8))
+fig = plt.figure(figsize=(8, 10))
 fig.subplots_adjust(wspace=0.3)
-truAx = plt.subplot(131)
-fctAx = plt.subplot(132)
-varAx = plt.subplot(133)
+truAx = plt.subplot(311)
+fctAx = plt.subplot(312)
+varAx = plt.subplot(313)
 
 vmin = min((truTraj.min(), fctTraj.min()))
 vmax = max((truTraj.max(), fctTraj.max()))
 
-truAx.matshow(truTraj, origin='lower', vmin=vmin, vmax=vmax)
-fctAx.matshow(fctTraj, origin='lower', vmin=vmin, vmax=vmax)
+truAx.matshow(truTraj.T, origin='lower', vmin=vmin, vmax=vmax)
+fctAx.matshow(fctTraj.T, origin='lower', vmin=vmin, vmax=vmax)
 
 truAx.set_title('Truth')
 fctAx.set_title('Forecasts')
 
-xticklabels, xticks, indexes = grid.ticks(units=km)
+gridTicksLabel, gridTicks, indexes = grid.ticks(units=km)
 for axe in (truAx, fctAx):
     axe.set_aspect('auto')
-    axe.set_ylabel(r'$t$ [hours]')
-    axe.set_yticks(times[::nDt/nTimeTicks]/h)
-    axe.set_xlabel(r'$x$ [km]')
     axe.xaxis.set_ticks_position('bottom')
-    axe.set_xticks(indexes)
-    axe.set_xticklabels(xticklabels)
+    axe.set_xticks(())
+
+    axe.set_ylabel(r'$x$ [km]')
+    axe.set_yticks(indexes)
+    axe.set_yticklabels(gridTicksLabel)
 
 varAx.plot(times/h, fctVarTraj)
 varAx.set_yscale('log')
+varAx.set_xlabel(r'$t$ [hours]')
+varAx.set_xticks(times[::nDt/nTimeTicks]/h)
+varAx.set_title('Forecast variance')

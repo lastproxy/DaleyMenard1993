@@ -2,8 +2,7 @@ import numpy as np
 from numpy import pi
 import matplotlib.pyplot as plt
 
-from DM93 import modelSpPropagator
-from DM93 import Uncorrelated, Foar, Soar, Gaussian
+from DM93 import Covariance, Uncorrelated, Foar, Soar, Gaussian
 
 #====================================================================
 #===| setup and configuration |======================================
@@ -12,14 +11,14 @@ execfile('config.py')
 
 # -- observation errors
 obsCorr = Uncorrelated(grid)
-obsErrBias = 0.
-obsErrVar = 0.1
+obsBias = 0.
+obsVar = 0.1
 
-# -- model errors
-modLc = grid.L/20.
-modCorr = Soar(grid, modLc)
-modErrBias = 0.
-modErrVar = 2.
+# -- forecast errors
+fctLc = grid.L/20.
+fctCorr = Soar(grid, fctLc)
+fctBias = 0.
+fctVar = 2.
 
 # -- initial truth state
 ampl = 10.
@@ -28,23 +27,23 @@ truth = ampl * np.exp(-grid.x**2/(grid.L/6.)**2)
 #====================================================================
 #===| computations |=================================================
 
-# -- random error structures
-obsErr = obsCorr.random(variance=obsErrVar, mean=obsErrBias)
-modErr = modCorr.random(variance=modErrVar, mean=modErrBias)
-
 # -- covariance matrices
-B = modErrVar * modCorr.matrix
-R = obsErrVar * obsCorr.matrix
+B = Covariance(grid, fctVar * fctCorr.matrix)
+R = Covariance(grid, obsVar * obsCorr.matrix)
+
+# -- random error structures
+fctErr = B.random(bias=fctBias)
+obsErr = R.random(bias=obsBias)
 
 # -- background state
-xb = truth + modErr
+xb = truth + fctErr
 
 # -- observations
 y = truth + obsErr
 
 # -- analysis
-SInv = np.linalg.inv(B+R) 
-K = B.dot(SInv)
+SInv = np.linalg.inv(B.matrix+R.matrix) 
+K = B.matrix.dot(SInv)
 dxa = K.dot(y-xb) 
 
 xa = xb + dxa
