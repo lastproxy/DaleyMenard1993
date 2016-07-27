@@ -103,7 +103,7 @@ for i in xrange(nDt+1):
 nTimeTicks = 5
 
 fig = plt.figure(figsize=(8, 10))
-fig.subplots_adjust(wspace=0.3)
+fig.subplots_adjust(wspace=0.3, top=0.84)
 truAx = plt.subplot(311)
 fctAx = plt.subplot(312)
 varAx = plt.subplot(313)
@@ -127,10 +127,19 @@ for axe in (truAx, fctAx):
     axe.set_yticks(indexes)
     axe.set_yticklabels(gridTicksLabel)
 
-varAx.plot(times/h, fctVarTraj)
+varAx.plot(times/h, obsVar*np.ones(len(times)), linestyle='--', label=r'$\sigma_o^2$')
+varAx.plot(times/h, modVar*np.ones(len(times)), linestyle='--', label=r'$\sigma_q^2$')
+varAx.plot(times/h, fctVarTraj, label=r'$\sigma_b^2$')
 varAx.set_yscale('log')
 varAx.set_xlabel(r'$t$ [hours]')
 varAx.set_xticks(times[::nDt/nTimeTicks]/h)
+varAx.legend(loc='upper right')
 varAx.set_title('Forecast variance')
+
+fig.suptitle(   r'$\sigma_q^2=%.0e,\ \sigma_b^2=%.0e,\ \sigma_b^2=%.0e$'%(
+                                    modVar, fctVar, obsVar),
+                fontsize=16
+                )
+
 
 plt.show()

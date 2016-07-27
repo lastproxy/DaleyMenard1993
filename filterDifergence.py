@@ -158,6 +158,7 @@ for xpTag, xpConf in xpDict.iteritems():
         axe.set_yticklabels(gridTicksLabel)
     
     varAx.plot(times/h, obsVar*np.ones(len(times)), linestyle='--', label=r'$\sigma_o^2$')
+    varAx.plot(times/h, modVar*np.ones(len(times)), linestyle='--', label=r'$\sigma_q^2$')
     varAx.plot(times/h, fctVarTraj, label=r'$\sigma_b^2$')
     varAx.set_yscale('log')
     varAx.set_xlabel(r'$t$ [hours]')
