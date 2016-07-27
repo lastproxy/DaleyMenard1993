@@ -32,13 +32,22 @@ class SpectralModel(object):
         self.M = self._buildGridPropagator() 
 
     def __call__(self, x):
-        ''' Apply model propagator on state
+        ''' Apply model propagator on state or matrix
+
+        If `x` is a vector, M(x) = M.x
+        if `x` is a matrix, M(x) == M.x.M'
 
         :Parameters:
             x : np.ndarray
-                model state
+                model state or matrix
         '''
-        return self.M.dot(x)
+        if x.ndim == 1:
+            return self.M.dot(x)
+        elif x.ndim == 2:
+            return (self.M.dot(x)).dot(self.M.T)
+        else:
+            raise ValueError()
+
 
     def _buildSpPropagator(self):
         ''' build spectral propagator '''
