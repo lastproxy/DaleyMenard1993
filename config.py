@@ -16,5 +16,6 @@ dt =1.*h
 U = 100.*km/h
 
 # -- viscosity
-nuFactor = 0.00001
+#nuFactor = 0.00001
+nuFactor = 0.0
 nu =  nuFactor/dt*(2.*pi*grid.L)**2
