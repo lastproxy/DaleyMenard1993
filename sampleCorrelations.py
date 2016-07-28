@@ -1,7 +1,7 @@
 '''
 Estimates correlation matrix with finite ensembles of perturbations and illustrates sampling noise inducing unphysical teleconnections.
 
-Since the number of members is tightly constrained by integration cost in real atmospheric models, localisation is often used to circumvent this problem by restricting the sampled covariance on a compact support.
+Since the number of members is tightly constrained by integration cost in real atmospheric models, localization is often used to circumvent this problem by restricting the sampled covariance on a compact support.
 '''
 from sys import stdout
 import numpy as np 

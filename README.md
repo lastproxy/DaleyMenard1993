@@ -41,6 +41,12 @@ These packages are readilly available on all major Linux distributions.
 
 ### Installation
 
+To obtain the bundle, you can either download a zip file from [github.com/martndj/DaleyMenard1993](https://github.com/martndj/DaleyMenard1993) or use git in command line:
+
+```
+git clone https://github.com/martndj/DaleyMenard1993.git
+```
+
 The bundle does not contain a `setup.py` script; simply copy the
 `./DM93/` folder in your work directory or add it to the `PYTHONPATH`.
 
@@ -59,10 +65,10 @@ All the scripts at the root level are self contained experiments or illustration
 
 -   defines space and time units
 -   defines the assimilation window for model integration
--   defines the periodic domaine and spectral truncature
+-   defines the periodic domain and spectral truncature
 -   define the two physical parameters: the zonal wind speed and the dissipation coefficient
 
-`config.py` is sourced in most of the other scripts (such that they share the parametrisation), but one can replace the statetment `execfile('config.py')` with explicit local definitions of the grid and parameters.
+`config.py` is sourced in most of the other scripts (such that they share the parametrization), but one can replace the statetment `execfile('config.py')` with explicit local definitions of the grid and parameters.
 
 The grid defined in the script is an instance of `Grid` class defined in `./DM93/gridCls.py`.
 This object also provide the discrete Fourier transform and its inverse.
@@ -80,24 +86,24 @@ These are experiments involving actual computations using discrete Fourier trans
 Compare three isotropic and homogeneous correlation models:
 
 -   Foar (first order auto-regressive model)
--   Soar (first order auto-regressive model)
+-   Soar (second order auto-regressive model)
 -   Gaussian
 
-It plots the correlations in function of distance and their normalized power spectra.
-It also generates and plots one random spatial realisation of each of these models.
+It plots the correlations as a function of distance and their power spectra.
+It also generates and plots one random spatial realization of each of these models.
 
 Worth mentioning, the correlation length is defined by the distance where the correlation reaches 1/sqrt(e).
 
 Correlations models are instances of the `CorrModel` (itself deriving from `Covariance` class) and are defined in `./DM93/covarianceCls.py`.
 All `Covariance` instances provide their matrix representation and a random generator.
-`CorrModel` instances provide as well their radial correlation function, and their theoretical normalized power spectrum (as obtained on an infinite domain).
+`CorrModel` instances provide as well their radial correlation function, and their theoretical power spectrum (as obtained on an infinite domain).
 
 
 #### **sampleCorrelations.py**
 
 Estimates correlation matrix with finite ensembles of perturbations and illustrates sampling noise inducing unphysical teleconnections.
 
-Since the number of members is tightly constrained by integration cost in real atmospheric models, localisation is often used to circumvent this problem by restricting the sampled covariance on a compact support.
+Since the number of members is tightly constrained by integration cost in real atmospheric models, localization is often used to circumvent this problem by restricting the sampled covariance on a compact support.
 
 #### **propagation.py**
 
@@ -106,27 +112,17 @@ Integrate the numerical model and produce a trajectory using an `AdvectionDiffus
 `AdvectionDiffusionModel` is defined with a `Grid` instance, the physical parameters `U` and `nu` (in m/s) and an assimilation window `dt` in seconds.
 
 One can change the grid or parameters setting either by modifying `config.py` or replacing the `execfile('config.py')` statement with explicit equivalent definitions.
-Initial condition can also be changed, for instance, one could consider the evolution of a perturbation by initialising it with:
-
-```python
-from DM93 import Gaussian
-B = Gaussian(grid, 300.)
-ic = B.random()
-```
-
-But since the advection and diffusion model is non-dispersive, the initial condition is advected without deformation.
-(A more difficult and lengthy exercice - requiring some python knowledge - would be to derive the `SpectralModel` class defined in `./DM93/spectralModelCls.py` and build a dispersive spectral model, then use it to propagate the perturbation and consider the evolution of its spectrum.)
 
 
 #### **analysis.py**
 
-Compute the analysis using optimal interpolation (direct inversion of B+R innovation matrix) and output the error reduction.
+Compute the analysis (through direct inversion of B+R innovation matrix) and output the error reduction.
 
 For both observation and forecast errors, statistics need to be provided:
 
 -   correlation model
 -   correlation length
--   bias
+-   bias (0 by default)
 -   variance (constant on the domain)
 
 By default (and as it is a common hypothesis in most context), the observation error are uncorrelated.
@@ -137,9 +133,9 @@ What would be the impact of having correlated observation errors? The impact of 
 
 Run an assimilation cycle using the Kalman Filter; for each assimilation window: 
 
-1.  observations are obtained (simulated from the truth plus a random realisation of R);
-2.  an analysis is computed using optimal interpolation;
-3.  the analysis if integrated using the model to produce the forecast;
+1.  observations are obtained (simulated from the truth plus a random realization of R);
+2.  an analysis is computed;
+3.  the analysis is integrated using the model to produce the forecast;
 4.  covariance matrices are propagated using the Kalman Filter equations;
 5.  the forecast and covariance is then used for the next assimilation window.
 
@@ -147,7 +143,7 @@ Observation, forecast and model errors statistics need to be provided:
 
 -   correlation model
 -   correlation length
--   bias
+-   bias (0 by default)
 -   variance (constant on the domain)
 
 The script plots the truth and forecast trajectories as well as the forecast and analysis variances evolution in time.
@@ -157,9 +153,9 @@ The script plots the truth and forecast trajectories as well as the forecast and
 
 Illustrates the forecast variance evolution and the Kalman Filter divergence issue by comparing three assimilation experiments:
 
-1.  A perfect model assimilation initialised with an imperfect initial condition
-2.  A perfect model integration initialised with an imperfect initial condition (no assimilation)
-3.  An imperfect model assimilation initialised with an imperfect initial condition
+1.  A perfect model assimilation initialized with an imperfect initial condition
+2.  A perfect model integration initialized with an imperfect initial condition (no assimilation)
+3.  An imperfect model assimilation initialized with an imperfect initial condition
 
 As in `kalmanFilter.py`, statistics need to be provided.
 
@@ -209,18 +205,4 @@ How would correlated observation errors impact these properties?
 Illustrates the impact of viscosity on the assymptotical variances and convergence rate spectra.
 
 (Reproduce figure 3 from the articla, section 3-b)
-
-
-#### **LcFromSpectra.py**
-
-Correlation length is not defined univocally.
-One definition is based on the curvature of a gaussian at the origin.
-Based on this definition, it is possible to determine the correlation length from the power spectrum of the correlation.
-
-This script use this definition to estimate the correlation length from three correlation models and compare them with the true one.
-
-What explains that one model is better than the other?
-What happens when the spectral resolution is better?
-
-
 

@@ -1,11 +1,11 @@
 '''
-Compute the analysis using optimal interpolation (direct inversion of B+R innovation matrix) and output the error reduction.
+Compute the analysis (through direct inversion of B+R innovation matrix) and output the error reduction.
 
 For both observation and forecast errors, statistics need to be provided:
 
 -   correlation model
 -   correlation length
--   bias
+-   bias (0 by default)
 -   variance (constant on the domain)
 
 By default (and as it is a common hypothesis in most context), the observation error are uncorrelated.

@@ -1,9 +1,9 @@
 '''
 Illustrates the forecast variance evolution and the Kalman Filter divergence issue by comparing three assimilation experiments:
 
-1.  A perfect model assimilation initialised with an imperfect initial condition
-2.  A perfect model integration initialised with an imperfect initial condition (no assimilation)
-3.  An imperfect model assimilation initialised with an imperfect initial condition
+1.  A perfect model assimilation initialized with an imperfect initial condition
+2.  A perfect model integration initialized with an imperfect initial condition (no assimilation)
+3.  An imperfect model assimilation initialized with an imperfect initial condition
 
 As in `kalmanFilter.py`, statistics need to be provided.
 
@@ -53,11 +53,11 @@ times = np.array([i*dt for i in xrange(nDt+1)])
 
 # -- XPs configurations
 xpDict = {  'perf': {       'modVar':0.0, 'doAss':True, 
-                            'label':'perfect model', 'color':'b'},
+                            'label':'perfect model', 'color':'r'},
             'perfNoDA': {   'modVar':0.0, 'doAss':False, 
-                            'label':'perfect model without assimilation', 'color':'g'},
+                            'label':'perfect model without assimilation', 'color':'m'},
             'imperf': {     'modVar':0.01, 'doAss':True, 
-                            'label':'imperfect model', 'color':'r'},
+                            'label':'imperfect model', 'color':'b'},
             }
 
 doPlotXPs = False
@@ -134,9 +134,9 @@ for xpTag, xpConf in xpDict.iteritems():
     anlVarTrajDict[xpTag] = fctVarTraj
     
     
-    #================================================================
-    #===| plots |====================================================
     if doPlotXPs:
+        #============================================================
+        #===| plots |================================================
     
         fig = plt.figure(figsize=(8, 10))
         fig.subplots_adjust(wspace=0.3, top=0.84)
@@ -192,37 +192,31 @@ for xpTag, xpConf in xpDict.iteritems():
             title = (   xpConf['label'] + '\n' +
                         r'$\sigma_b^2=%.0e,\ \sigma_b^2=%.0e$'%(fctVar, obsVar))
         fig.suptitle(title, fontsize=16)
-        fig.savefig('xpKF_%s.png'%xpTag)
+        #============================================================
 
     print('\n'+'='*30+'\n')
 
 
-
-
+#====================================================================
+#===| plots |========================================================
 
 fig2 = plt.figure()
 varAx2 = plt.subplot(111)
 minVar = np.infty
 maxVar = -np.infty
 for xpTag  in fctVarTrajDict.iterkeys():
-    modVar = xpDict[xpTag]['modVar']
     fctVarTraj = fctVarTrajDict[xpTag]
-    anlVarTraj = anlVarTrajDict[xpTag]
     varAx2.plot(times/h, fctVarTraj, color=xpDict[xpTag]['color'], 
-                label= xpDict[xpTag]['label'])
-    varAx2.plot(times/h, anlVarTraj, color=xpDict[xpTag]['color']) 
-    varAx2.plot(times/h, obsVar*np.ones(len(times)), linestyle='--', color=xpDict[xpTag]['color'])
-    if modVar > 0:
-        varAx2.plot(times/h, modVar*np.ones(len(times)), 
-                    linestyle='-.', color=xpDict[xpTag]['color'])
-    
-        tmp = min((obsVar, modVar, fctVarTraj.min(), anlVarTraj.min()))
-    else:
-        tmp = min((obsVar, fctVarTraj.min(), anlVarTraj.min()))
+                label=r'$\sigma_f^2$ %s'%xpDict[xpTag]['label'])
+
+    tmp = min((obsVar, fctVarTraj.min(), anlVarTraj.min()))
     if tmp < minVar : minVar = tmp
     tmp = max((obsVar, modVar, fctVarTraj.max(), anlVarTraj.max()))
     if tmp > maxVar : maxVar = tmp
 
+
+varAx2.plot(times/h, obsVar*np.ones(len(times)), linestyle='--', 
+            color='g', label=r'$\sigma_o^2$')
 varAx2.set_yscale('log')
 varAx2.set_ylim(0.8*minVar, 1.2*maxVar)
 
@@ -231,5 +225,4 @@ varAx2.set_xlabel(r'$t$ [hours]')
 varAx2.set_xticks(times[::nDt/nTimeTicks]/h)
 varAx2.set_title('Forecast variance')
 
-fig2.savefig('xpKF_filterDiv.png')
 plt.show()

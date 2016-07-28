@@ -1,9 +1,9 @@
 '''
 Run an assimilation cycle using the Kalman Filter; for each assimilation window: 
 
-1.  observations are obtained (simulated from the truth plus a random realisation of R);
-2.  an analysis is computed using optimal interpolation;
-3.  the analysis if integrated using the model to produce the forecast;
+1.  observations are obtained (simulated from the truth plus a random realization of R);
+2.  an analysis is computed;
+3.  the analysis is integrated using the model to produce the forecast;
 4.  covariance matrices are propagated using the Kalman Filter equations;
 5.  the forecast and covariance is then used for the next assimilation window.
 
@@ -11,7 +11,7 @@ Observation, forecast and model errors statistics need to be provided:
 
 -   correlation model
 -   correlation length
--   bias
+-   bias (0 by default)
 -   variance (constant on the domain)
 
 The script plots the truth and forecast trajectories as well as the forecast and analysis variances evolution in time.
