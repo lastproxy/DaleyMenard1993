@@ -1,3 +1,8 @@
+'''
+Illustrates the Kalman Filter impact on variance at different scales for given forecast and observation error statistics.
+
+Correlation models and length scales can be changed.
+'''
 import numpy as np 
 import matplotlib.pyplot as plt
 

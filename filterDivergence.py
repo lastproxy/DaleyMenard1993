@@ -1,3 +1,14 @@
+'''
+Illustrates the forecast variance evolution and the Kalman Filter divergence issue by comparing three assimilation experiments:
+
+1.  A perfect model assimilation initialised with an imperfect initial condition
+2.  A perfect model integration initialised with an imperfect initial condition (no assimilation)
+3.  An imperfect model assimilation initialised with an imperfect initial condition
+
+As in `kalmanFilter.py`, statistics need to be provided.
+
+By default, only the variance comparison plot is produced, change `doPlotXPs = True` for all three experiments to produce trajectory plots.
+'''
 from sys import stdout
 import numpy as np 
 from numpy import pi
@@ -10,23 +21,7 @@ from DM93 import Covariance, Uncorrelated, Foar, Soar, Gaussian
 #====================================================================
 #===| setup and configuration |======================================
 
-# -- units of space: m and time: s
-km = 1000.
-h = 3600.
-day = 24.*h
-
-# -- discretization
-L = 16000 * km
-N = 48
-grid = Grid(N, L)
-dt =1.*h
-
-# -- zonal wind
-U = 100.*km/h
-
-# -- viscosity
-nuFactor = 0.0
-nu =  nuFactor/dt*(2.*pi*grid.L)**2
+execfile('config.py')
 
 # -- observation errors (R)
 obsLc = None
@@ -65,7 +60,7 @@ xpDict = {  'perf': {       'modVar':0.0, 'doAss':True,
                             'label':'imperfect model', 'color':'r'},
             }
 
-doPlotXPs = True
+doPlotXPs = False
 nTimeTicks = 5
 
 #====================================================================

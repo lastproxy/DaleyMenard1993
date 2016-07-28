@@ -1,3 +1,19 @@
+'''
+Compare three isotropic and homogeneous correlation models:
+
+-   Foar (first order auto-regressive model)
+-   Soar (first order auto-regressive model)
+-   Gaussian
+
+It plots the correlations in function of distance and their normalized power spectra.
+It also generates and plots one random spatial realisation of each of these models.
+
+Worth mentioning, the correlation length is defined by the distance where the correlation reaches 1/sqrt(e).
+
+Correlations models are instances of the `CorrModel` (itself deriving from `Covariance` class) and are defined in `./DM93/covarianceCls.py`.
+All `Covariance` instances provide their matrix representation and a random generator.
+`CorrModel` instances provide as well their radial correlation function, and their theoretical normalized power spectrum (as obtained on an infinite domain).
+'''
 import numpy as np 
 import matplotlib.pyplot as plt
 from DM93 import Uncorrelated, Foar, Soar, Gaussian

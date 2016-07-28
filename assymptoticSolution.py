@@ -1,3 +1,12 @@
+'''
+Illustrates the assymptotical properties of the Kalman Filter.
+Assymptotic forecast and analysis variance spectra are shown.
+Also shown is the convergence rate in function of wavenumber.
+
+How would correlated observation errors impact these properties?
+
+(Reproduce the figure 2b from the article, section 3-a)
+'''
 import numpy as np 
 import matplotlib.pyplot as plt
 

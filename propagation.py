@@ -1,3 +1,20 @@
+'''
+Integrate the numerical model and produce a trajectory using an `AdvectionDiffusionModel` instance.
+
+`AdvectionDiffusionModel` is defined with a `Grid` instance, the physical parameters `U` and `nu` (in m/s) and an assimilation window `dt` in seconds.
+
+One can change the grid or parameters setting either by modifying `config.py` or replacing the `execfile('config.py')` statement with explicit equivalent definitions.
+Initial condition can also be changed, for instance, one could consider the evolution of a perturbation by initialising it with:
+
+```python
+from DM93 import Gaussian
+B = Gaussian(grid, 300.)
+ic = B.random()
+```
+
+But since the advection and diffusion model is non-dispersive, the initial condition is advected without deformation.
+(A more difficult exercice - requiring some python knowledge - would be to derive the `SpectralModel` class defined in `./DM93/spectralModelCls.py` and build a dispersive spectral model, then use it to propagate something.)
+'''
 from sys import stdout
 import numpy as np 
 from numpy import pi

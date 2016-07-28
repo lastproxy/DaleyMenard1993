@@ -1,3 +1,16 @@
+'''
+Defines constants and the periodic domain.
+
+-   defines space and time units
+-   defines the assimilation window for model integration
+-   defines the periodic domaine and spectral truncature
+-   define the two physical parameters: the zonal wind speed and the dissipation coefficient
+
+`config.py` is sourced in most of the other scripts (such that they share the parametrisation), but one can replace the statetment `execfile('config.py')` with explicit local definitions of the grid and parameters.
+
+The grid defined in the script is an instance of `Grid` class defined in `./DM93/gridCls.py`.
+This object also provide the discrete Fourier transform and its inverse.
+'''
 from numpy import pi 
 from DM93 import Grid
 

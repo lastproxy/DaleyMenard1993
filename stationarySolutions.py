@@ -1,3 +1,12 @@
+'''
+Illustrates the forecast variance convergence on the manifold for a given wavenumber.
+The two stationary solutions are plotted, of which only one is stable and physical.
+
+Iterates are identified by blue dots and numbers on the manifold.
+As one can see by modifying `k` (the wavenumber), convergence slows with wavenumber.
+
+(Reproduce the figure 1 from the article, section 2-a)
+'''
 import numpy as np 
 import matplotlib.pyplot as plt
 
@@ -10,10 +19,11 @@ from DM93 import spVarStationary, fcstSpVarPropagator,  varItGenerator
 execfile('config.py')
 
 # -- Correlations
-corrObs = Uncorrelated(grid)
+obsLc = None
+obsCorr = Uncorrelated(grid, obsLc)
 
-Lc = grid.L/20.
-corrMod = Soar(grid, Lc)
+modLc = grid.L/20.
+modCorr = Soar(grid, modLc)
 
 # -- wavenumber and initial forecast variance
 k = 10
@@ -26,8 +36,8 @@ nIter = 5
 #===| computations |=================================================
 
 # -- correlation power spectra
-r2 = corrObs.powSpecTh()
-q2 = corrMod.powSpecTh()
+r2 = obsCorr.powSpecTh()
+q2 = modCorr.powSpecTh()
 
 convF2 = list()
 convG = list()
@@ -86,6 +96,8 @@ for i, (f2, g) in enumerate(zip(convF2, convG)):
 # -- finishing touches
 axe.set_xlabel(r'$f^2$')
 axe.set_ylabel(r'$G(f^2)$')
+axe.set_xlim(domF2.min(), domF2.max())
+#axe.set_ylim(domG2.min, domG2.max())
 axe.set_aspect('equal')
 
 axe.set_title(r'Convergence to stationary solution for $k=%d$'%k)
