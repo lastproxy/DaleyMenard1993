@@ -134,7 +134,6 @@ for axe in (truAx, fctAx):
 
 varAx.plot(times/h, sigo2, linestyle='--', label=r'$\sigma_o^2$')
 varAx.plot(times/h, sigq2, linestyle='--', label=r'$\sigma_q^2$')
-varAx.fill_between( times/h, sigo2, y2=sigq2, color='y', alpha=0.4)
 varAx.plot(times/h, fctVarTraj, label=r'$\sigma_b^2$')
 varAx.plot(times/h, anlVarTraj, label=r'$\sigma_a^2$')
 
@@ -144,7 +143,7 @@ varAx.set_xticks(times[::nDt/nTimeTicks]/h)
 varAx.legend(loc='upper right')
 varAx.set_title('Forecast variance')
 
-fig.suptitle(   r'$\sigma_q^2=%.0e,\ \sigma_b^2=%.0e,\ \sigma_b^2=%.0e$'%(
+fig.suptitle(   r'$\sigma_q^2=%.0e,\ \sigma_b^2=%.0e,\ \sigma_o^2=%.0e$'%(
                                     modVar, fctVar, obsVar),
                 fontsize=16
                 )

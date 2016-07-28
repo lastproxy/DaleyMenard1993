@@ -74,8 +74,6 @@ axe.plot(domF2, domF2, 'k', linestyle=':')
 
 # -- stationary solutions
 axe.plot(f2Plus, GF2Plus, 's', color='g', label=r'$\overline{f}_+^2$')
-axe.axvline(x=f2Plus, linestyle='--', color='g')
-axe.axhline(y=GF2Plus, linestyle='--', color='g')
 
 axe.plot(f2Minus, GF2Minus, 's', color='r', label=r'$\overline{f}_-^2$')
 
@@ -88,6 +86,7 @@ for i, (f2, g) in enumerate(zip(convF2, convG)):
 # -- finishing touches
 axe.set_xlabel(r'$f^2$')
 axe.set_ylabel(r'$G(f^2)$')
+axe.set_aspect('equal')
 
 axe.set_title(r'Convergence to stationary solution for $k=%d$'%k)
 
