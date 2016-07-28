@@ -39,7 +39,7 @@ truIc = ampl * np.exp(-grid.x**2/(grid.L/6.)**2)
 model = AdvectionDiffusionModel(grid, U, dt=dt, nu=nu)
 
 # -- integration
-nDt = 20
+nDt = 10
 
 #====================================================================
 #===| computations |=================================================
@@ -99,8 +99,6 @@ for i in xrange(nDt+1):
     anlVarTraj[i] = A.variance[0]
      
 
-sigo2 =  obsVar*np.ones(len(times))
-sigq2 =  modVar*np.ones(len(times))
 
 #====================================================================
 #===| plots |========================================================
@@ -132,13 +130,24 @@ for axe in (truAx, fctAx):
     axe.set_yticklabels(gridTicksLabel)
 
 
-varAx.plot(times/h, sigo2, linestyle='--', label=r'$\sigma_o^2$')
-varAx.plot(times/h, sigq2, linestyle='--', label=r'$\sigma_q^2$')
-varAx.plot(times/h, fctVarTraj, label=r'$\sigma_b^2$')
-varAx.plot(times/h, anlVarTraj, label=r'$\sigma_a^2$')
+varAx.plot( times/h, obsVar*np.ones(len(times)), 
+            linestyle='--', color='g',  label=r'$\sigma_o^2$')
+if modVar > 0:
+    varAx.plot( times/h, modVar*np.ones(len(times)), 
+                linestyle='--', color='m', label=r'$\sigma_q^2$')
+varAx.plot(times/h, fctVarTraj, color='b', label=r'$\sigma_f^2$')
+varAx.plot(times/h, anlVarTraj, color='r', label=r'$\sigma_a^2$')
 
 varAx.set_yscale('log')
 varAx.set_xlabel(r'$t$ [hours]')
+
+maxVar = max((obsVar, modVar, fctVarTraj.max(), anlVarTraj.max()))
+if modVar > 0:
+    minVar = min((obsVar, modVar, fctVarTraj.min(), anlVarTraj.min()))
+else:
+    minVar = min((obsVar, fctVarTraj.min(), anlVarTraj.min()))
+    
+varAx.set_ylim(0.8*minVar, 1.2*maxVar)
 varAx.set_xticks(times[::nDt/nTimeTicks]/h)
 varAx.legend(loc='upper right')
 varAx.set_title('Forecast variance')

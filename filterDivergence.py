@@ -77,8 +77,6 @@ anlVarTrajDict = dict()
 for xpTag, xpConf in xpDict.iteritems():
     print(xpConf['label'])
     modVar = xpConf['modVar']
-    sigo2 =  obsVar*np.ones(len(times))
-    sigq2 =  modVar*np.ones(len(times))
     doAssimilate = xpConf['doAss']
 
     # -- initialise seed
@@ -170,19 +168,34 @@ for xpTag, xpConf in xpDict.iteritems():
             axe.set_yticks(indexes)
             axe.set_yticklabels(gridTicksLabel)
         
-        varAx.plot( times/h, sigo2, linestyle='--', label=r'$\sigma_b^2$')
-        varAx.plot( times/h, sigq2, linestyle='--', label=r'$\sigma_q^2$')
-        varAx.fill_between( times/h, sigo2, y2=sigq2, alpha=0.2, color='y')
-        varAx.plot(times/h, fctVarTraj, label=r'$\sigma_b^2$')
+        varAx.plot( times/h, obsVar*np.ones(len(times)), 
+                    linestyle='--', color='g', label=r'$\sigma_o^2$')
+        if modVar > 0:
+            varAx.plot( times/h, modVar*np.ones(len(times)),
+                        linestyle='--', color='m', label=r'$\sigma_q^2$')
+        varAx.plot(times/h, fctVarTraj, color='b', label=r'$\sigma_f^2$')
+        varAx.plot(times/h, anlVarTraj, color='r', label=r'$\sigma_a^2$')
+
         varAx.set_yscale('log')
+        maxVar = max((obsVar, modVar, fctVarTraj.max(), anlVarTraj.max()))
+        if modVar > 0:
+            minVar = min((obsVar, modVar, fctVarTraj.min(), anlVarTraj.min()))
+        else:
+            minVar = min((obsVar, fctVarTraj.min(), anlVarTraj.min()))
+        varAx.set_ylim(0.8*minVar, 1.2*maxVar)
+
         varAx.set_xlabel(r'$t$ [hours]')
         varAx.set_xticks(times[::nDt/nTimeTicks]/h)
         varAx.legend(loc='upper right')
         varAx.set_title('Forecast variance')
         
-        title = (   xpConf['label'] + '\n' +
-                    r'$\sigma_q^2=%.0e,\ \sigma_b^2=%.0e,\ \sigma_b^2=%.0e$'%(
+        if modVar > 0:
+            title = (   xpConf['label'] + '\n' +
+                        r'$\sigma_q^2=%.0e,\ \sigma_b^2=%.0e,\ \sigma_b^2=%.0e$'%(
                                                         modVar, fctVar, obsVar))
+        else:
+            title = (   xpConf['label'] + '\n' +
+                        r'$\sigma_b^2=%.0e,\ \sigma_b^2=%.0e$'%(fctVar, obsVar))
         fig.suptitle(title, fontsize=16)
         fig.savefig('xpKF_%s.png'%xpTag)
 
@@ -194,23 +207,31 @@ for xpTag, xpConf in xpDict.iteritems():
 
 fig2 = plt.figure()
 varAx2 = plt.subplot(111)
+minVar = np.infty
+maxVar = -np.infty
 for xpTag  in fctVarTrajDict.iterkeys():
     modVar = xpDict[xpTag]['modVar']
-    sigo2 =  obsVar*np.ones(len(times))
-    sigq2 =  modVar*np.ones(len(times))
     fctVarTraj = fctVarTrajDict[xpTag]
     anlVarTraj = anlVarTrajDict[xpTag]
     varAx2.plot(times/h, fctVarTraj, color=xpDict[xpTag]['color'], 
                 label= xpDict[xpTag]['label'])
     varAx2.plot(times/h, anlVarTraj, color=xpDict[xpTag]['color']) 
-    varAx2.plot(times/h, sigo2, linestyle='--', color=xpDict[xpTag]['color'])
-    varAx2.plot(times/h, sigq2, linestyle='--', color=xpDict[xpTag]['color'])
-    varAx2.fill_between(times/h, sigo2, y2=sigq2, alpha=0.4, 
-                        color=xpDict[xpTag]['color'])
+    varAx2.plot(times/h, obsVar*np.ones(len(times)), linestyle='--', color=xpDict[xpTag]['color'])
+    if modVar > 0:
+        varAx2.plot(times/h, modVar*np.ones(len(times)), 
+                    linestyle='-.', color=xpDict[xpTag]['color'])
     
+        tmp = min((obsVar, modVar, fctVarTraj.min(), anlVarTraj.min()))
+    else:
+        tmp = min((obsVar, fctVarTraj.min(), anlVarTraj.min()))
+    if tmp < minVar : minVar = tmp
+    tmp = max((obsVar, modVar, fctVarTraj.max(), anlVarTraj.max()))
+    if tmp > maxVar : maxVar = tmp
+
+varAx2.set_yscale('log')
+varAx2.set_ylim(0.8*minVar, 1.2*maxVar)
 
 varAx2.legend(loc='upper right')
-varAx2.set_yscale('log')
 varAx2.set_xlabel(r'$t$ [hours]')
 varAx2.set_xticks(times[::nDt/nTimeTicks]/h)
 varAx2.set_title('Forecast variance')
