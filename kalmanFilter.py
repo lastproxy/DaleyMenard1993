@@ -52,6 +52,7 @@ obsTraj = np.empty(shape=(nDt+1, grid.J))
 anlTraj = np.empty(shape=(nDt+1, grid.J))
 fctTraj = np.empty(shape=(nDt+1, grid.J))
 fctVarTraj = np.empty(nDt+1)
+anlVarTraj = np.empty(nDt+1)
 
 
 # -- initial covariances
@@ -86,7 +87,7 @@ for i in xrange(nDt+1):
         xa = xb
 
     # -- propagating
-    xb = model(xa) 
+    xb = model(xa)
     xt = model(xt) + Q.random(bias=modBias) 
     
     # -- recording states
@@ -95,8 +96,11 @@ for i in xrange(nDt+1):
     anlTraj[i] = xa
     fctTraj[i] = xb
     fctVarTraj[i] = B.variance[0]
+    anlVarTraj[i] = A.variance[0]
      
 
+sigo2 =  obsVar*np.ones(len(times))
+sigq2 =  modVar*np.ones(len(times))
 
 #====================================================================
 #===| plots |========================================================
@@ -127,9 +131,13 @@ for axe in (truAx, fctAx):
     axe.set_yticks(indexes)
     axe.set_yticklabels(gridTicksLabel)
 
-varAx.plot(times/h, obsVar*np.ones(len(times)), linestyle='--', label=r'$\sigma_o^2$')
-varAx.plot(times/h, modVar*np.ones(len(times)), linestyle='--', label=r'$\sigma_q^2$')
+
+varAx.plot(times/h, sigo2, linestyle='--', label=r'$\sigma_o^2$')
+varAx.plot(times/h, sigq2, linestyle='--', label=r'$\sigma_q^2$')
+varAx.fill_between( times/h, sigo2, y2=sigq2, color='y', alpha=0.4)
 varAx.plot(times/h, fctVarTraj, label=r'$\sigma_b^2$')
+varAx.plot(times/h, anlVarTraj, label=r'$\sigma_a^2$')
+
 varAx.set_yscale('log')
 varAx.set_xlabel(r'$t$ [hours]')
 varAx.set_xticks(times[::nDt/nTimeTicks]/h)

@@ -53,34 +53,44 @@ truIc = ampl * np.exp(-grid.x**2/(grid.L/6.)**2)
 model = AdvectionDiffusionModel(grid, U, dt=dt, nu=nu)
 
 # -- integration
-nDt = 20
+nDt = 10
+times = np.array([i*dt for i in xrange(nDt+1)])
 
 # -- XPs configurations
-xpDict = {  'perf': {'modVar':0.0, 'doAss':True, 'label':'perfect model'},
-            'perfNoDA': {'modVar':0.0, 'doAss':False, 'label':'perfect model without assimilation'},
-            'imperf': {'modVar':0.01, 'doAss':True, 'label':'imperfect model'},
+xpDict = {  'perf': {       'modVar':0.0, 'doAss':True, 
+                            'label':'perfect model', 'color':'b'},
+            'perfNoDA': {   'modVar':0.0, 'doAss':False, 
+                            'label':'perfect model without assimilation', 'color':'g'},
+            'imperf': {     'modVar':0.01, 'doAss':True, 
+                            'label':'imperfect model', 'color':'r'},
             }
 
-fctVarTrajDict = dict()
+doPlotXPs = True
+nTimeTicks = 5
 
 #====================================================================
 #===| computations |=================================================
+
+fctVarTrajDict = dict()
+anlVarTrajDict = dict()
+
 for xpTag, xpConf in xpDict.iteritems():
     print(xpConf['label'])
     modVar = xpConf['modVar']
+    sigo2 =  obsVar*np.ones(len(times))
+    sigq2 =  modVar*np.ones(len(times))
     doAssimilate = xpConf['doAss']
 
     # -- initialise seed
     np.random.seed(213134)
     
     # -- memory allocation
-    times = np.array([i*dt for i in xrange(nDt+1)])
-    
     truTraj = np.empty(shape=(nDt+1, grid.J))
     obsTraj = np.empty(shape=(nDt+1, grid.J))
     anlTraj = np.empty(shape=(nDt+1, grid.J))
     fctTraj = np.empty(shape=(nDt+1, grid.J))
     fctVarTraj = np.empty(nDt+1)
+    anlVarTraj = np.empty(nDt+1)
     
     
     # -- initial covariances
@@ -123,62 +133,81 @@ for xpTag, xpConf in xpDict.iteritems():
         obsTraj[i] = y
         anlTraj[i] = xa
         fctTraj[i] = xb
-        fctVarTraj[i] = B.variance[0]
-         
+        fctVarTraj[i] = B.variance[0] 
+        anlVarTraj[i] = A.variance[0]
+     
+
     fctVarTrajDict[xpTag] = fctVarTraj
+    anlVarTrajDict[xpTag] = fctVarTraj
     
     
     #================================================================
     #===| plots |====================================================
-    nTimeTicks = 5
+    if doPlotXPs:
     
-    fig = plt.figure(figsize=(8, 10))
-    fig.subplots_adjust(wspace=0.3, top=0.84)
-    truAx = plt.subplot(311)
-    fctAx = plt.subplot(312)
-    varAx = plt.subplot(313)
-    
-    vmin = min((truTraj.min(), fctTraj.min()))
-    vmax = max((truTraj.max(), fctTraj.max()))
-    
-    truAx.matshow(truTraj.T, origin='lower', vmin=vmin, vmax=vmax)
-    fctAx.matshow(fctTraj.T, origin='lower', vmin=vmin, vmax=vmax)
-    
-    truAx.set_title('Truth')
-    fctAx.set_title('Forecasts')
-    
-    gridTicksLabel, gridTicks, indexes = grid.ticks(units=km)
-    for axe in (truAx, fctAx):
-        axe.set_aspect('auto')
-        axe.xaxis.set_ticks_position('bottom')
-        axe.set_xticks(())
-    
-        axe.set_ylabel(r'$x$ [km]')
-        axe.set_yticks(indexes)
-        axe.set_yticklabels(gridTicksLabel)
-    
-    varAx.plot(times/h, obsVar*np.ones(len(times)), linestyle='--', label=r'$\sigma_o^2$')
-    varAx.plot(times/h, modVar*np.ones(len(times)), linestyle='--', label=r'$\sigma_q^2$')
-    varAx.plot(times/h, fctVarTraj, label=r'$\sigma_b^2$')
-    varAx.set_yscale('log')
-    varAx.set_xlabel(r'$t$ [hours]')
-    varAx.set_xticks(times[::nDt/nTimeTicks]/h)
-    varAx.legend(loc='upper right')
-    varAx.set_title('Forecast variance')
-    
-    title = (   xpConf['label'] + '\n' +
-                r'$\sigma_q^2=%.0e,\ \sigma_b^2=%.0e,\ \sigma_b^2=%.0e$'%(
-                                                    modVar, fctVar, obsVar))
-    fig.suptitle(title, fontsize=16)
-    fig.savefig('xpKF_%s.png'%xpTag)
+        fig = plt.figure(figsize=(8, 10))
+        fig.subplots_adjust(wspace=0.3, top=0.84)
+        truAx = plt.subplot(311)
+        fctAx = plt.subplot(312)
+        varAx = plt.subplot(313)
+        
+        vmin = min((truTraj.min(), fctTraj.min()))
+        vmax = max((truTraj.max(), fctTraj.max()))
+        
+        truAx.matshow(truTraj.T, origin='lower', vmin=vmin, vmax=vmax)
+        fctAx.matshow(fctTraj.T, origin='lower', vmin=vmin, vmax=vmax)
+        
+        truAx.set_title('Truth')
+        fctAx.set_title('Forecasts')
+        
+        gridTicksLabel, gridTicks, indexes = grid.ticks(units=km)
+        for axe in (truAx, fctAx):
+            axe.set_aspect('auto')
+            axe.xaxis.set_ticks_position('bottom')
+            axe.set_xticks(())
+        
+            axe.set_ylabel(r'$x$ [km]')
+            axe.set_yticks(indexes)
+            axe.set_yticklabels(gridTicksLabel)
+        
+        varAx.plot( times/h, sigo2, linestyle='--', label=r'$\sigma_b^2$')
+        varAx.plot( times/h, sigq2, linestyle='--', label=r'$\sigma_q^2$')
+        varAx.fill_between( times/h, sigo2, y2=sigq2, alpha=0.2, color='y')
+        varAx.plot(times/h, fctVarTraj, label=r'$\sigma_b^2$')
+        varAx.set_yscale('log')
+        varAx.set_xlabel(r'$t$ [hours]')
+        varAx.set_xticks(times[::nDt/nTimeTicks]/h)
+        varAx.legend(loc='upper right')
+        varAx.set_title('Forecast variance')
+        
+        title = (   xpConf['label'] + '\n' +
+                    r'$\sigma_q^2=%.0e,\ \sigma_b^2=%.0e,\ \sigma_b^2=%.0e$'%(
+                                                        modVar, fctVar, obsVar))
+        fig.suptitle(title, fontsize=16)
+        fig.savefig('xpKF_%s.png'%xpTag)
+
     print('\n'+'='*30+'\n')
+
+
+
+
 
 fig2 = plt.figure()
 varAx2 = plt.subplot(111)
-for xpTag, varTraj in fctVarTrajDict.iteritems():
-    varAx2.plot(times/h, varTraj, label=xpDict[xpTag]['label'])
+for xpTag  in fctVarTrajDict.iterkeys():
+    modVar = xpDict[xpTag]['modVar']
+    sigo2 =  obsVar*np.ones(len(times))
+    sigq2 =  modVar*np.ones(len(times))
+    fctVarTraj = fctVarTrajDict[xpTag]
+    anlVarTraj = anlVarTrajDict[xpTag]
+    varAx2.plot(times/h, fctVarTraj, color=xpDict[xpTag]['color'], 
+                label= xpDict[xpTag]['label'])
+    varAx2.plot(times/h, anlVarTraj, color=xpDict[xpTag]['color']) 
+    varAx2.plot(times/h, sigo2, linestyle='--', color=xpDict[xpTag]['color'])
+    varAx2.plot(times/h, sigq2, linestyle='--', color=xpDict[xpTag]['color'])
+    varAx2.fill_between(times/h, sigo2, y2=sigq2, alpha=0.4, 
+                        color=xpDict[xpTag]['color'])
     
-varAx2.plot(times/h, obsVar*np.ones(len(times)), linestyle='--', label=r'$\sigma_o^2$')
 
 varAx2.legend(loc='upper right')
 varAx2.set_yscale('log')

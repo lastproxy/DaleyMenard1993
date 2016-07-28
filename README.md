@@ -5,10 +5,6 @@ This bundle contains a module (DM93) and a collection of python scripts
 illustrating important characteristics of the Kalman Filter using a
 simple spectral advection model.
 
-Its pupose is heuristic and scripts are meant to be fiddled with, change
-this, change that and see what's going on! Always wondered what would
-happen if observation errors where correlated?
-
 DM93 Module
 -----------
 
@@ -43,7 +39,7 @@ authors - Open Source rocks!
 -   Numpy
 -   Matplotlib
 
-This packages are readilly available on all major Linux distributions.
+These packages are readilly available on all major Linux distributions.
 
 ### Installation
 
