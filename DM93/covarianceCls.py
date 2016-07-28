@@ -61,6 +61,8 @@ class Covariance(object):
     def variance(self):
         return self.matrix.diagonal()
         
+    def __getitem__(self, slice):
+        return self.matrix[slice]
 
 class CorrModel(Covariance):
     ''' 
