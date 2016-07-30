@@ -21,12 +21,12 @@ grid = Grid(N, L)
 dt =1.*h
 
 # -- initial state
-x0 = grid.L/5.
-ic = np.exp(-(grid.x-x0)**2/(L/6.)**2)
+#ic = np.random.normal(size=grid.J)
+ic = np.ones(grid.J)
 
 
 # -- ensemble of models
-nModels = 20
+nModels = 100
 models = list()
 for i in xrange(nModels):
     nuFactor = np.random.normal(0.00001, scale=0.000001)
@@ -51,9 +51,16 @@ deviations =  np.empty(shape=(nModels, grid.J))
 for n in xrange(nModels):
     deviations[n] = finalStates[n] - meanState
 
+cubeQ = np.empty(shape=(nModels, grid.J, grid.J))
+for i, p in enumerate(deviations):
+    cubeQ[i] = np.outer(p,p)
+
+Q = np.mean(cubeQ, axis=0)
 
 #====================================================================
 #===| plots |========================================================
 
 for n in xrange(nModels):
     plt.plot(grid.x, deviations[n])
+
+matshow(Q)
